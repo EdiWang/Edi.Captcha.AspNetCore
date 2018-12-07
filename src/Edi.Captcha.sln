@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edi.Captcha", "Edi.Captcha\Edi.Captcha.csproj", "{7B788977-1DA7-4E79-BAEC-2EA433EC41D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edi.Captcha", "Edi.Captcha\Edi.Captcha.csproj", "{7B788977-1DA7-4E79-BAEC-2EA433EC41D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edi.Captcha.SampleApp", "Edi.Captcha.SampleApp\Edi.Captcha.SampleApp.csproj", "{B6A0EABD-0A08-4AEA-8E15-EA0FAEACCF71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{7B788977-1DA7-4E79-BAEC-2EA433EC41D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B788977-1DA7-4E79-BAEC-2EA433EC41D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B788977-1DA7-4E79-BAEC-2EA433EC41D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6A0EABD-0A08-4AEA-8E15-EA0FAEACCF71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6A0EABD-0A08-4AEA-8E15-EA0FAEACCF71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6A0EABD-0A08-4AEA-8E15-EA0FAEACCF71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6A0EABD-0A08-4AEA-8E15-EA0FAEACCF71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

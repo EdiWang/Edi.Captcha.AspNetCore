@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Edi.Captcha.SampleApp.Models;
+
+namespace Edi.Captcha.SampleApp.Controllers
+{
+    public class HomeController : Controller
+    {
+        private readonly ISessionBasedCaptcha _captcha;
+
+        public HomeController(ISessionBasedCaptcha captcha)
+        {
+            _captcha = captcha;
+        }
+
+        public IActionResult Index()
+        {
+            return View(new HomeModel());
+        }
+
+        [Route("get-captcha-image")]
+        public IActionResult GetCaptchaImage()
+        {
+            var s = _captcha.GenerateCaptchaImageFileStream(
+                100,
+                36,
+                HttpContext.Session);
+            return s;
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
+}

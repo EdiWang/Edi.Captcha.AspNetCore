@@ -1,0 +1,21 @@
+﻿@model HomeModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="col">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <img id="img-captcha" src="~/get-captcha-image" />
+        </div>
+        <input type="text"
+               asp-for="CaptchaCode"
+               class="form-control"
+               placeholder="Captcha Code"
+               autocomplete="off"
+               minlength="4"
+               maxlength="4" />
+    </div>
+    <span asp-validation-for="CaptchaCode" class="text-danger"></span>
+</div>
