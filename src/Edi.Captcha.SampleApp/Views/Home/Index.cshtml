@@ -3,12 +3,12 @@
     <partial name="_ValidationScriptsPartial" />
 }
 
-<form>
+<form asp-action="Index" asp-controller="Home" method="post">
     <div class="row">
         <div class="col-6">
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <img id="img-captcha" src="~/get-captcha-image" />
+                    <img id="img-captcha" src="@Url.Action("GetCaptchaImage", "Home")" />
                 </div>
                 <input type="text"
                        asp-for="CaptchaCode"

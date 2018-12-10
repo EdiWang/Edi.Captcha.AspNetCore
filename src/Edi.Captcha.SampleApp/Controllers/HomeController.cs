@@ -22,6 +22,18 @@ namespace Edi.Captcha.SampleApp.Controllers
             return View(new HomeModel());
         }
 
+        [HttpPost]
+        public IActionResult Index(HomeModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                bool isValidCaptcha = _captcha.ValidateCaptchaCode(model.CaptchaCode, HttpContext.Session);
+                return Content(isValidCaptcha ? "Success" : "Invalid captcha code");
+            }
+
+            return BadRequest();
+        }
+
         [Route("get-captcha-image")]
         public IActionResult GetCaptchaImage()
         {
