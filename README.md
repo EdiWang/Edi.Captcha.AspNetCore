@@ -1,6 +1,8 @@
 # Edi.Captcha.AspNetCore
 The Captcha module used in my blog
 
+[![Build status](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_apis/build/status/Edi.Captcha.AspNetCore-CI)](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_build/latest?definitionId=42)
+
 ## Usage
 
 ### 1. Register in DI
