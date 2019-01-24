@@ -5,6 +5,19 @@ The Captcha module used in my blog
 
 ## Usage
 
+### 0. Install from NuGet
+
+NuGet Package Manager
+```
+Install-Package Edi.Captcha
+```
+
+or .NET CLI
+
+```
+dotnet add package Edi.Captcha
+```
+
 ### 1. Register in DI
 
 ```
