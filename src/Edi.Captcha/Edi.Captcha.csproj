@@ -4,13 +4,13 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Authors>Edi Wang</Authors>
     <Company>edi.wang</Company>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <Version>1.1.0</Version>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <Version>1.2.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
     <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
-    <Copyright>(c) 2018 edi.wang</Copyright>
+    <Copyright>(c) 2019 edi.wang</Copyright>
     <PackageTags>Captcha</PackageTags>
   </PropertyGroup>
 

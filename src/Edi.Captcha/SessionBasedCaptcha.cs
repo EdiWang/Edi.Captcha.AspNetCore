@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,11 +20,23 @@ namespace Edi.Captcha
             return new FileStreamResult(s, "image/png");
         }
 
-        public bool ValidateCaptchaCode(string userInputCaptcha, ISession httpSession)
+        /// <summary>
+        /// Validate Captcha Code
+        /// </summary>
+        /// <param name="userInputCaptcha">User Input Captcha Code</param>
+        /// <param name="httpSession">Current Session</param>
+        /// <param name="ignoreCase">Ignore Case (default = true)</param>
+        /// <param name="dropSession">Whether to drop session regardless of the validation pass or not (default = true)</param>
+        /// <returns>Is Valid Captcha Challenge</returns>
+        public bool ValidateCaptchaCode(string userInputCaptcha, ISession httpSession, bool ignoreCase = true, bool dropSession = true)
         {
-            var isValid = userInputCaptcha == httpSession.GetString(SessionName);
-            httpSession.Remove(SessionName);
-            return isValid;
+            var codeInSession = httpSession.GetString(SessionName);
+            var isValid = string.Compare(userInputCaptcha, codeInSession, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+            if (dropSession)
+            {
+                httpSession.Remove(SessionName);
+            }
+            return isValid == 0;
         }
     }
 }

@@ -7,6 +7,6 @@ namespace Edi.Captcha
     {
         FileStreamResult GenerateCaptchaImageFileStream(int width, int height, ISession httpSession);
 
-        bool ValidateCaptchaCode(string userInputCaptcha, ISession httpSession);
+        bool ValidateCaptchaCode(string userInputCaptcha, ISession httpSession, bool ignoreCase = true, bool dropSession = true);
     }
 }
