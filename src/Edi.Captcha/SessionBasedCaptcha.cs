@@ -11,8 +11,13 @@ namespace Edi.Captcha
 
         public abstract string GenerateCaptchaCode();
 
-        public FileStreamResult GenerateCaptchaImageFileStream(int width, int height, ISession httpSession)
+        public FileStreamResult GenerateCaptchaImageFileStream(ISession httpSession, int width = 100, int height = 36)
         {
+            if (null == httpSession)
+            {
+                throw new ArgumentNullException(nameof(httpSession), 
+                    "Session can not be null, please check if Session is enabled in ASP.NET Core via services.AddSession() and app.UseSession().");
+            }
             var captchaCode = GenerateCaptchaCode();
             var result = CaptchaImageGenerator.GetImage(width, height, captchaCode);
             httpSession.SetString(SessionName, result.CaptchaCode);

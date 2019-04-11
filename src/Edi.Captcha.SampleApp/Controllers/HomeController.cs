@@ -37,10 +37,7 @@ namespace Edi.Captcha.SampleApp.Controllers
         [Route("get-captcha-image")]
         public IActionResult GetCaptchaImage()
         {
-            var s = _captcha.GenerateCaptchaImageFileStream(
-                100,
-                36,
-                HttpContext.Session);
+            var s = _captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
             return s;
         }
 
