@@ -25,8 +25,25 @@ dotnet add package Edi.Captcha
 
 ### 1. Register in DI
 
+```csharp
+services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+});
+
+services.AddSessionBasedCaptcha();
 ```
-services.AddTransient<ISessionBasedCaptcha, BasicLetterCaptcha>();
+
+or you can customize the options
+
+```csharp
+services.AddSessionBasedCaptcha(option =>
+{
+    option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
+    option.SessionName = "CaptchaCode";
+    option.CodeLength = 4;
+});
 ```
 
 ### 2. Use DI in Controller
