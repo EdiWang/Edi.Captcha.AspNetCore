@@ -7,7 +7,7 @@ namespace Edi.Captcha
     {
         public string Letters { get; set; }
 
-        public int CodeLength { get; set; }
+        public int CodeLength { get; }
 
         public BasicLetterCaptcha(
             string letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ",
@@ -16,6 +16,11 @@ namespace Edi.Captcha
         {
             Letters = letters;
             SessionName = sessionName;
+            if (codeLength < 1 || codeLength > 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(codeLength),
+                    $"codeLength must range within 1-32, current value is {codeLength}");
+            }
             CodeLength = codeLength;
         }
 
