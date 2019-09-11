@@ -33,10 +33,14 @@ namespace Edi.Captcha.SampleApp
 
             services.AddMvc();
 
-            // In .NET Core 3.0, BasicLetterCaptcha ctor will assign random exceeded numbers to CodeLength on 2nd try
-            // (e.g. refresh page or request captcha image again).
-            // services.AddTransient<ISessionBasedCaptcha, BasicLetterCaptcha>();
-            services.AddTransient<ISessionBasedCaptcha>(sb => new BasicLetterCaptcha());
+            services.AddSessionBasedCaptcha();
+
+            //services.AddSessionBasedCaptcha(option =>
+            //{
+            //    option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
+            //    option.SessionName = "CaptchaCode";
+            //    option.CodeLength = 4;
+            //});
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

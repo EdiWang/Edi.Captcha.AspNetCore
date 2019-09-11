@@ -5,9 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Edi.Captcha
 {
-    public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
+    public class SessionBasedCaptchaOptions
     {
         public string SessionName { get; set; }
+    }
+
+    public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
+    {
+        public SessionBasedCaptchaOptions Options { get; set; }
 
         public abstract string GenerateCaptchaCode();
 
@@ -20,7 +25,7 @@ namespace Edi.Captcha
             }
             var captchaCode = GenerateCaptchaCode();
             var result = CaptchaImageGenerator.GetImage(width, height, captchaCode);
-            httpSession.SetString(SessionName, result.CaptchaCode);
+            httpSession.SetString(Options.SessionName, result.CaptchaCode);
             Stream s = new MemoryStream(result.CaptchaByteData);
             return new FileStreamResult(s, "image/png");
         }
@@ -35,11 +40,11 @@ namespace Edi.Captcha
         /// <returns>Is Valid Captcha Challenge</returns>
         public bool ValidateCaptchaCode(string userInputCaptcha, ISession httpSession, bool ignoreCase = true, bool dropSession = true)
         {
-            var codeInSession = httpSession.GetString(SessionName);
+            var codeInSession = httpSession.GetString(Options.SessionName);
             var isValid = string.Compare(userInputCaptcha, codeInSession, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
             if (dropSession)
             {
-                httpSession.Remove(SessionName);
+                httpSession.Remove(Options.SessionName);
             }
             return isValid == 0;
         }

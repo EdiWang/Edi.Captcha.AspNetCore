@@ -3,37 +3,39 @@ using System.Text;
 
 namespace Edi.Captcha
 {
-    public class BasicLetterCaptcha : SessionBasedCaptcha
+    public class BasicLetterCaptchaOptions : SessionBasedCaptchaOptions
     {
         public string Letters { get; set; }
 
-        public int CodeLength { get; }
+        public int CodeLength { get; set; }
+    }
 
-        public BasicLetterCaptcha(
-            string letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ",
-            string sessionName = "CaptchaCode",
-            int codeLength = 4)
+    public class BasicLetterCaptcha : SessionBasedCaptcha
+    {
+        private readonly BasicLetterCaptchaOptions _options;
+
+        public BasicLetterCaptcha(BasicLetterCaptchaOptions options)
         {
-            Letters = letters;
-            SessionName = sessionName;
-            if (codeLength < 1 || codeLength > 32)
-            {
-                throw new ArgumentOutOfRangeException(nameof(codeLength),
-                    $"codeLength must range within 1-32, current value is {codeLength}");
-            }
-            CodeLength = codeLength;
+            Options = options;
+            _options = options;
         }
 
         public override string GenerateCaptchaCode()
         {
+            if (_options.CodeLength < 1 || _options.CodeLength > 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(_options.CodeLength),
+                    $"codeLength must range within 1-32, current value is {_options.CodeLength}");
+            }
+
             var rand = new Random();
-            var maxRand = Letters.Length - 1;
+            var maxRand = _options.Letters.Length - 1;
 
             var sb = new StringBuilder();
-            for (var i = 0; i < CodeLength; i++)
+            for (var i = 0; i < _options.CodeLength; i++)
             {
                 var index = rand.Next(maxRand);
-                sb.Append(Letters[index]);
+                sb.Append(_options.Letters[index]);
             }
 
             return sb.ToString();
