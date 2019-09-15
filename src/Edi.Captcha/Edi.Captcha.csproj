@@ -6,7 +6,7 @@
     <Company>edi.wang</Company>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
-    <Version>2.0.0-preview</Version>
+    <Version>2.0.0-preview2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
     <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
