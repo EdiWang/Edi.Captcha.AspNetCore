@@ -35,6 +35,11 @@ services.AddSession(options =>
 services.AddSessionBasedCaptcha();
 ```
 
+```csharp
+// Don't forget to add this line in your `Configure` method.
+ app.UseSession();
+```
+
 or you can customize the options
 
 ```csharp
