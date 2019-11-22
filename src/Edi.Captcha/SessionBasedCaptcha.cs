@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.IO;
 
 namespace Edi.Captcha
 {
@@ -20,7 +20,7 @@ namespace Edi.Captcha
         {
             if (null == httpSession)
             {
-                throw new ArgumentNullException(nameof(httpSession), 
+                throw new ArgumentNullException(nameof(httpSession),
                     "Session can not be null, please check if Session is enabled in ASP.NET Core via services.AddSession() and app.UseSession().");
             }
             var captchaCode = GenerateCaptchaCode();
@@ -40,6 +40,10 @@ namespace Edi.Captcha
         /// <returns>Is Valid Captcha Challenge</returns>
         public bool ValidateCaptchaCode(string userInputCaptcha, ISession httpSession, bool ignoreCase = true, bool dropSession = true)
         {
+            if (string.IsNullOrWhiteSpace(userInputCaptcha))
+            {
+                return false;
+            }
             var codeInSession = httpSession.GetString(Options.SessionName);
             var isValid = string.Compare(userInputCaptcha, codeInSession, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
             if (dropSession)
