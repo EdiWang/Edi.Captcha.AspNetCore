@@ -1,5 +1,3 @@
-using System;
-
 namespace Edi.Captcha.SampleApp.Models
 {
     public class ErrorViewModel

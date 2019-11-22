@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Edi.Captcha.SampleApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using Edi.Captcha.SampleApp.Models;
+using System.Diagnostics;
 
 namespace Edi.Captcha.SampleApp.Controllers
 {
