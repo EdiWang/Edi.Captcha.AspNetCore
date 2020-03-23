@@ -1,8 +1,6 @@
 # Edi.Captcha.AspNetCore
 The Captcha module used in my blog
 
-[![Build status](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_apis/build/status/Edi.Captcha.AspNetCore-CI)](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_build/latest?definitionId=42)
-
 [![NuGet][main-nuget-badge]][main-nuget]
 
 [main-nuget]: https://www.nuget.org/packages/Edi.Captcha/
