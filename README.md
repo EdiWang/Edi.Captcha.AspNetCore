@@ -1,6 +1,8 @@
 # Edi.Captcha.AspNetCore
 The Captcha module used in my blog
 
+![.NET Core](https://github.com/EdiWang/Edi.Captcha.AspNetCore/workflows/.NET%20Core/badge.svg)
+
 [![NuGet][main-nuget-badge]][main-nuget]
 
 [main-nuget]: https://www.nuget.org/packages/Edi.Captcha/
