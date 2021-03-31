@@ -16,13 +16,20 @@ namespace Edi.Captcha
 
         public abstract string GenerateCaptchaCode();
 
+        public byte[] GenerateCaptchaImageBytes(ISession httpSession, int width = 100, int height = 36)
+        {
+            EnsureHttpSession(httpSession);
+
+            var captchaCode = GenerateCaptchaCode();
+            var result = CaptchaImageGenerator.GetImage(width, height, captchaCode);
+            httpSession.SetString(Options.SessionName, result.CaptchaCode);
+            return result.CaptchaByteData;
+        }
+
         public FileStreamResult GenerateCaptchaImageFileStream(ISession httpSession, int width = 100, int height = 36)
         {
-            if (null == httpSession)
-            {
-                throw new ArgumentNullException(nameof(httpSession),
-                    "Session can not be null, please check if Session is enabled in ASP.NET Core via services.AddSession() and app.UseSession().");
-            }
+            EnsureHttpSession(httpSession);
+
             var captchaCode = GenerateCaptchaCode();
             var result = CaptchaImageGenerator.GetImage(width, height, captchaCode);
             httpSession.SetString(Options.SessionName, result.CaptchaCode);
@@ -38,7 +45,7 @@ namespace Edi.Captcha
         /// <param name="ignoreCase">Ignore Case (default = true)</param>
         /// <param name="dropSession">Whether to drop session regardless of the validation pass or not (default = true)</param>
         /// <returns>Is Valid Captcha Challenge</returns>
-        public bool ValidateCaptchaCode(string userInputCaptcha, ISession httpSession, bool ignoreCase = true, bool dropSession = true)
+        public bool Validate(string userInputCaptcha, ISession httpSession, bool ignoreCase = true, bool dropSession = true)
         {
             if (string.IsNullOrWhiteSpace(userInputCaptcha))
             {
@@ -51,6 +58,15 @@ namespace Edi.Captcha
                 httpSession.Remove(Options.SessionName);
             }
             return isValid == 0;
+        }
+
+        private static void EnsureHttpSession(ISession httpSession)
+        {
+            if (null == httpSession)
+            {
+                throw new ArgumentNullException(nameof(httpSession),
+                    "Session can not be null, please check if Session is enabled in ASP.NET Core via services.AddSession() and app.UseSession().");
+            }
         }
     }
 }

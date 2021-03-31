@@ -23,7 +23,7 @@ namespace Edi.Captcha.SampleApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool isValidCaptcha = _captcha.ValidateCaptchaCode(model.CaptchaCode, HttpContext.Session);
+                bool isValidCaptcha = _captcha.Validate(model.CaptchaCode, HttpContext.Session);
                 return Content(isValidCaptcha ? "Success" : "Invalid captcha code");
             }
 
