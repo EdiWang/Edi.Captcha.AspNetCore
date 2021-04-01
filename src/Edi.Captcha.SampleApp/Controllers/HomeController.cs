@@ -30,12 +30,12 @@ namespace Edi.Captcha.SampleApp.Controllers
             return BadRequest();
         }
 
-        [Route("get-captcha-image")]
-        public IActionResult GetCaptchaImage()
-        {
-            var s = _captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
-            return s;
-        }
+        //[Route("get-captcha-image")]
+        //public IActionResult GetCaptchaImage()
+        //{
+        //    var s = _captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
+        //    return s;
+        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

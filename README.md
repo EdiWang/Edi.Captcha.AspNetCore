@@ -51,9 +51,11 @@ services.AddSessionBasedCaptcha(option =>
 });
 ```
 
-### 2. Use DI in Controller
+### 2. Generate Image
 
-```
+#### Using MVC Controller
+
+```csharp
 private readonly ISessionBasedCaptcha _captcha;
 
 public SomeController(ISessionBasedCaptcha captcha)
@@ -61,11 +63,6 @@ public SomeController(ISessionBasedCaptcha captcha)
     _captcha = captcha;
 }
 
-```
-
-### 3. Add an Action to return captcha image
-
-```
 [Route("get-captcha-image")]
 public IActionResult GetCaptchaImage()
 {
@@ -77,9 +74,20 @@ public IActionResult GetCaptchaImage()
 }
 ```
 
-### 4. Add CaptchaCode Property to Model
+#### Using Middleware
 
+```csharp
+app.UseSession().UseCaptchaImage(options =>
+{
+    options.RequestPath = "/captcha-image";
+    options.ImageHeight = 36;
+    options.ImageWidth = 100;
+});
 ```
+
+### 3. Add CaptchaCode Property to Model
+
+```csharp
 [Required]
 [StringLength(4)]
 public string CaptchaCode { get; set; }
@@ -87,11 +95,11 @@ public string CaptchaCode { get; set; }
 
 ### 5. View
 
-```
+```html
 <div class="col">
     <div class="input-group">
         <div class="input-group-prepend">
-            <img id="img-captcha" src="~/get-captcha-image" />
+            <img id="img-captcha" src="~/captcha-image" />
         </div>
         <input type="text" 
                asp-for="CommentPostModel.CaptchaCode" 
@@ -107,7 +115,7 @@ public string CaptchaCode { get; set; }
 
 ### 6. Validate Input
 
-```
+```csharp
 _captcha.ValidateCaptchaCode(model.CommentPostModel.CaptchaCode, HttpContext.Session)
 ```
 

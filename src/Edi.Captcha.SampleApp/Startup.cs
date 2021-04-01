@@ -49,7 +49,12 @@ namespace Edi.Captcha.SampleApp
             }
 
             app.UseStaticFiles();
-            app.UseSession();
+            app.UseSession().UseCaptchaImage(options =>
+            {
+                options.RequestPath = "/captcha-image";
+                options.ImageHeight = 36;
+                options.ImageWidth = 100;
+            });
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>
