@@ -119,4 +119,75 @@ public string CaptchaCode { get; set; }
 _captcha.ValidateCaptchaCode(model.CommentPostModel.CaptchaCode, HttpContext.Session)
 ```
 
+To make your code look more cool, you can also write an Action Filter like this:
+
+```csharp
+public class ValidateCaptcha : ActionFilterAttribute
+{
+    private readonly ISessionBasedCaptcha _captcha;
+
+    public ValidateCaptcha(ISessionBasedCaptcha captcha)
+    {
+        _captcha = captcha;
+    }
+
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        var captchaedModel =
+            context.ActionArguments.Where(p => p.Value is ICaptchable)
+                                   .Select(x => x.Value as ICaptchable)
+                                   .FirstOrDefault();
+
+        if (null == captchaedModel)
+        {
+            context.ModelState.AddModelError(nameof(captchaedModel.CaptchaCode), "Captcha Code is required");
+            context.Result = new BadRequestObjectResult(context.ModelState);
+        }
+        else
+        {
+            if (!_captcha.Validate(captchaedModel.CaptchaCode, context.HttpContext.Session))
+            {
+                context.ModelState.AddModelError(nameof(captchaedModel.CaptchaCode), "Wrong Captcha Code");
+                context.Result = new ConflictObjectResult(context.ModelState);
+            }
+            else
+            {
+                base.OnActionExecuting(context);
+            }
+        }
+    }
+}
+```
+
+and then
+
+```csharp
+services.AddScoped<ValidateCaptcha>();
+```
+
+and then
+
+```csharp
+
+public class YourModelWithCaptchaCode : ICaptchable
+{
+    public string YourProperty { get; set; }
+
+    [Required]
+    [StringLength(4)]
+    public string CaptchaCode { get; set; }
+}
+
+public interface ICaptchable
+{
+    string CaptchaCode { get; set; }
+}
+
+[ServiceFilter(typeof(ValidateCaptcha))]
+public async Task<IActionResult> SomeAction(YourModelWithCaptchaCode model)
+{
+    // ....
+}
+```
+
 Refer to https://edi.wang/post/2018/10/13/generate-captcha-code-aspnet-core
