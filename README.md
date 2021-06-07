@@ -178,11 +178,6 @@ public class YourModelWithCaptchaCode : ICaptchable
     public string CaptchaCode { get; set; }
 }
 
-public interface ICaptchable
-{
-    string CaptchaCode { get; set; }
-}
-
 [ServiceFilter(typeof(ValidateCaptcha))]
 public async Task<IActionResult> SomeAction(YourModelWithCaptchaCode model)
 {
