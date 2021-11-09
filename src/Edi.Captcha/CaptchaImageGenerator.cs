@@ -1,26 +1,71 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using System;
 using System.IO;
+using Color = SixLabors.ImageSharp.Color;
+using PointF = SixLabors.ImageSharp.PointF;
 
 namespace Edi.Captcha
 {
     public static class CaptchaImageGenerator
     {
-        public static CaptchaResult GetImage(int width, int height, string captchaCode, bool drawBezier = false)
+        public static CaptchaResult GetImage(int width, int height, string captchaCode)
         {
-            using var baseMap = new Bitmap(width, height);
-            using var graph = Graphics.FromImage(baseMap);
+            using var ms = new MemoryStream();
             var rand = new Random();
 
-            graph.Clear(GetRandomLightColor());
+            using (var imgText = new Image<Rgba32>(width, height))
+            {
+                // characters layer
+                float position = 0;
+                var averageSize = width / captchaCode.Length;
+                var fontSize = Convert.ToInt32(averageSize);
+                var font = SystemFonts.CreateFont("Arial", fontSize, FontStyle.Regular);
 
-            DrawCaptchaCode();
-            DrawDisorderLine();
-            AdjustRippleEffect();
+                foreach (char c in captchaCode)
+                {
+                    var x = rand.Next(5, 10);
+                    var y = rand.Next(6, 13);
 
-            var ms = new MemoryStream();
-            baseMap.Save(ms, ImageFormat.Png);
+                    var location = new PointF(x + position, y);
+                    imgText.Mutate(ctx => ctx.DrawText(c.ToString(), font, GetRandomDeepColor(), location));
+                    position += TextMeasurer.Measure(c.ToString(), new RendererOptions(font, location)).Width;
+                }
+
+                Random random = new Random();
+                var builder = new AffineTransformBuilder();
+                var rWidth = random.Next(10, width);
+                var rHeight = random.Next(10, height);
+                var pointF = new PointF(rWidth, rHeight);
+                var degrees = random.Next(0, 10) * (random.Next(-10, 10) > 0 ? 1 : -1);
+                var rotation = builder.PrependRotationDegrees(degrees, pointF);
+                imgText.Mutate(ctx => ctx.Transform(rotation));
+
+                // background layer
+                int low = 180, high = 255;
+                var nRend = rand.Next(high) % (high - low) + low;
+                var nGreen = rand.Next(high) % (high - low) + low;
+                var nBlue = rand.Next(high) % (high - low) + low;
+                var backColor = Color.FromRgb((byte)nRend, (byte)nGreen, (byte)nBlue);
+                var img = new Image<Rgba32>(width, height);
+                img.Mutate(ctx => ctx.BackgroundColor(backColor));
+
+                // lines
+                for (var i = 0; i < rand.Next(3, 7); i++)
+                {
+                    var color = GetRandomDeepColor();
+                    var startPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
+                    var endPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
+                    img.Mutate(ctx => ctx.DrawLines(color, 1, startPoint, endPoint));
+                }
+
+                // merge layers
+                img.Mutate(ctx => ctx.DrawImage(imgText, 1f));
+                img.SaveAsPng(ms);
+            }
 
             return new CaptchaResult
             {
@@ -29,155 +74,10 @@ namespace Edi.Captcha
                 Timestamp = DateTime.UtcNow
             };
 
-            int GetFontSize(int imageWidth, int captchCodeCount)
-            {
-                var averageSize = imageWidth / captchCodeCount;
-                return Convert.ToInt32(averageSize);
-            }
-
             Color GetRandomDeepColor()
             {
                 int redlow = 160, greenLow = 100, blueLow = 160;
-                return Color.FromArgb(rand.Next(redlow), rand.Next(greenLow), rand.Next(blueLow));
-            }
-
-            Color GetRandomLightColor()
-            {
-                int low = 180, high = 255;
-
-                var nRend = rand.Next(high) % (high - low) + low;
-                var nGreen = rand.Next(high) % (high - low) + low;
-                var nBlue = rand.Next(high) % (high - low) + low;
-
-                return Color.FromArgb(nRend, nGreen, nBlue);
-            }
-
-            void DrawCaptchaCode()
-            {
-                var fontBrush = new SolidBrush(Color.Black);
-                var fontSize = GetFontSize(width, captchaCode.Length);
-                var font = new Font(FontFamily.GenericSerif, fontSize, FontStyle.Bold, GraphicsUnit.Pixel);
-                for (var i = 0; i < captchaCode.Length; i++)
-                {
-                    fontBrush.Color = GetRandomDeepColor();
-
-                    var shiftPx = fontSize / 6;
-
-                    float x = i * fontSize + rand.Next(-shiftPx, shiftPx) + rand.Next(-shiftPx, shiftPx);
-                    var maxY = height - fontSize;
-                    if (maxY < 0) maxY = 0;
-                    float y = rand.Next(0, maxY);
-
-                    graph.DrawString(captchaCode[i].ToString(), font, fontBrush, x, y);
-                }
-            }
-
-            void DrawDisorderLine()
-            {
-                var linePen = new Pen(new SolidBrush(Color.Black), 3);
-                for (var i = 0; i < rand.Next(3, 5); i++)
-                {
-                    linePen.Color = GetRandomDeepColor();
-
-                    var startPoint = new Point(rand.Next(0, width), rand.Next(0, height));
-                    var endPoint = new Point(rand.Next(0, width), rand.Next(0, height));
-                    graph.DrawLine(linePen, startPoint, endPoint);
-
-                    if (drawBezier)
-                    {
-                        var bezierPoint1 = new Point(rand.Next(0, width), rand.Next(0, height));
-                        var bezierPoint2 = new Point(rand.Next(0, width), rand.Next(0, height));
-
-                        graph.DrawBezier(linePen, startPoint, bezierPoint1, bezierPoint2, endPoint);
-                    }
-                }
-            }
-
-            void AdjustRippleEffect()
-            {
-                short nWave = 6;
-                var nWidth = baseMap.Width;
-                var nHeight = baseMap.Height;
-
-                var pt = new Point[nWidth, nHeight];
-
-                for (var x = 0; x < nWidth; ++x)
-                {
-                    for (var y = 0; y < nHeight; ++y)
-                    {
-                        var xo = nWave * Math.Sin(2.0 * 3.1415 * y / 128.0);
-                        var yo = nWave * Math.Cos(2.0 * 3.1415 * x / 128.0);
-
-                        var newX = x + xo;
-                        var newY = y + yo;
-
-                        if (newX > 0 && newX < nWidth)
-                        {
-                            pt[x, y].X = (int)newX;
-                        }
-                        else
-                        {
-                            pt[x, y].X = 0;
-                        }
-
-
-                        if (newY > 0 && newY < nHeight)
-                        {
-                            pt[x, y].Y = (int)newY;
-                        }
-                        else
-                        {
-                            pt[x, y].Y = 0;
-                        }
-                    }
-                }
-
-                var bSrc = (Bitmap)baseMap.Clone();
-
-                var bitmapData = baseMap.LockBits(new Rectangle(0, 0, baseMap.Width, baseMap.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-                var bmSrc = bSrc.LockBits(new Rectangle(0, 0, bSrc.Width, bSrc.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-
-                var scanline = bitmapData.Stride;
-
-                var scan0 = bitmapData.Scan0;
-                var srcScan0 = bmSrc.Scan0;
-
-                unsafe
-                {
-                    var p = (byte*)(void*)scan0;
-                    var pSrc = (byte*)(void*)srcScan0;
-
-                    var nOffset = bitmapData.Stride - baseMap.Width * 3;
-
-                    for (var y = 0; y < nHeight; ++y)
-                    {
-                        for (var x = 0; x < nWidth; ++x)
-                        {
-                            var xOffset = pt[x, y].X;
-                            var yOffset = pt[x, y].Y;
-
-                            if (yOffset >= 0 && yOffset < nHeight && xOffset >= 0 && xOffset < nWidth)
-                            {
-                                if (pSrc != null)
-                                {
-                                    if (p != null)
-                                    {
-                                        p[0] = pSrc[yOffset * scanline + xOffset * 3];
-                                        p[1] = pSrc[yOffset * scanline + xOffset * 3 + 1];
-                                        p[2] = pSrc[yOffset * scanline + xOffset * 3 + 2];
-                                    }
-                                }
-                            }
-
-                            p += 3;
-                        }
-                        p += nOffset;
-                    }
-                }
-
-                baseMap.UnlockBits(bitmapData);
-                bSrc.UnlockBits(bmSrc);
-                bSrc.Dispose();
+                return Color.FromRgb((byte)rand.Next(redlow), (byte)rand.Next(greenLow), (byte)rand.Next(blueLow));
             }
         }
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Edi.Captcha
+﻿namespace Edi.Captcha
 {
     public interface ICaptchable
     {
