@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using SixLabors.Fonts;
 
 namespace Edi.Captcha.SampleApp
 {
@@ -27,14 +28,15 @@ namespace Edi.Captcha.SampleApp
 
             services.AddMvc();
 
-            services.AddSessionBasedCaptcha();
+            //services.AddSessionBasedCaptcha();
 
-            //services.AddSessionBasedCaptcha(option =>
-            //{
-            //    option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
-            //    option.SessionName = "CaptchaCode";
-            //    option.CodeLength = 4;
-            //});
+            services.AddSessionBasedCaptcha(option =>
+            {
+                option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
+                option.SessionName = "CaptchaCode";
+                option.FontStyle = FontStyle.Bold;
+                option.CodeLength = 4;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

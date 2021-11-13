@@ -12,7 +12,7 @@ namespace Edi.Captcha
 {
     public static class CaptchaImageGenerator
     {
-        public static CaptchaResult GetImage(int width, int height, string captchaCode)
+        public static CaptchaResult GetImage(int width, int height, string captchaCode, FontStyle fontStyle = FontStyle.Regular)
         {
             using var ms = new MemoryStream();
             var rand = new Random();
@@ -23,7 +23,7 @@ namespace Edi.Captcha
                 float position = 0;
                 var averageSize = width / captchaCode.Length;
                 var fontSize = Convert.ToInt32(averageSize);
-                var font = SystemFonts.CreateFont("Arial", fontSize, FontStyle.Regular);
+                var font = SystemFonts.CreateFont("Arial", fontSize, fontStyle);
 
                 foreach (char c in captchaCode)
                 {
