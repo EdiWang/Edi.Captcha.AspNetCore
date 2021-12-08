@@ -5,6 +5,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using Color = SixLabors.ImageSharp.Color;
 using PointF = SixLabors.ImageSharp.PointF;
 
@@ -23,7 +24,17 @@ namespace Edi.Captcha
                 float position = 0;
                 var averageSize = width / captchaCode.Length;
                 var fontSize = Convert.ToInt32(averageSize);
-                var font = SystemFonts.CreateFont("Arial", fontSize, fontStyle);
+
+                Font font = null;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    font = SystemFonts.CreateFont("Arial", fontSize, fontStyle);
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    font = SystemFonts.CreateFont("Open Sans", fontSize, fontStyle);
+                }
 
                 foreach (char c in captchaCode)
                 {
