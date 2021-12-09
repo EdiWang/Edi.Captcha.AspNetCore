@@ -5,7 +5,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using Color = SixLabors.ImageSharp.Color;
 using PointF = SixLabors.ImageSharp.PointF;
 
@@ -13,7 +12,7 @@ namespace Edi.Captcha
 {
     public static class CaptchaImageGenerator
     {
-        public static CaptchaResult GetImage(int width, int height, string captchaCode, FontStyle fontStyle = FontStyle.Regular)
+        public static CaptchaResult GetImage(int width, int height, string captchaCode, string fontName, FontStyle fontStyle = FontStyle.Regular)
         {
             using var ms = new MemoryStream();
             var rand = new Random();
@@ -25,16 +24,7 @@ namespace Edi.Captcha
                 var averageSize = width / captchaCode.Length;
                 var fontSize = Convert.ToInt32(averageSize);
 
-                Font font = null;
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    font = SystemFonts.CreateFont("Arial", fontSize, fontStyle);
-                }
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    font = SystemFonts.CreateFont("Open Sans", fontSize, fontStyle);
-                }
+                Font font = SystemFonts.CreateFont(fontName, fontSize, fontStyle);
 
                 foreach (char c in captchaCode)
                 {

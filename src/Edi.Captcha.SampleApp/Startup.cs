@@ -29,12 +29,12 @@ namespace Edi.Captcha.SampleApp
             services.AddMvc();
 
             //services.AddSessionBasedCaptcha();
-
             services.AddSessionBasedCaptcha(option =>
             {
                 option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
                 option.SessionName = "CaptchaCode";
                 option.FontStyle = FontStyle.Bold;
+                //option.FontName = "Arial";
                 option.CodeLength = 4;
             });
         }

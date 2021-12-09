@@ -10,6 +10,7 @@ namespace Edi.Captcha
     {
         public string SessionName { get; set; }
         public FontStyle FontStyle { get; set; }
+        public string FontName { get; set; }
 
         public SessionBasedCaptchaOptions()
         {
@@ -28,7 +29,7 @@ namespace Edi.Captcha
             EnsureHttpSession(httpSession);
 
             var captchaCode = GenerateCaptchaCode();
-            var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontStyle);
+            var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle);
             httpSession.SetString(Options.SessionName, result.CaptchaCode);
             return result.CaptchaByteData;
         }
@@ -38,7 +39,7 @@ namespace Edi.Captcha
             EnsureHttpSession(httpSession);
 
             var captchaCode = GenerateCaptchaCode();
-            var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontStyle);
+            var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle);
             httpSession.SetString(Options.SessionName, result.CaptchaCode);
             Stream s = new MemoryStream(result.CaptchaByteData);
             return new FileStreamResult(s, "image/png");
