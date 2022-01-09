@@ -1,32 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+		<Authors>Edi Wang</Authors>
+		<Company>edi.wang</Company>
+		<AssemblyVersion>3.8.0.0</AssemblyVersion>
+		<FileVersion>3.8.0.0</FileVersion>
+		<Version>3.8.0</Version>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
+		<PackageProjectUrl>https://edi.wang</PackageProjectUrl>
+		<Copyright>(c) 2022 edi.wang</Copyright>
+		<PackageTags>Captcha</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Description>Generate and Validate Captcha Images in ASP.NET Core</Description>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
-    <Authors>Edi Wang</Authors>
-    <Company>edi.wang</Company>
-    <AssemblyVersion>3.7.0.0</AssemblyVersion>
-    <FileVersion>3.7.0.0</FileVersion>
-    <Version>3.7.0</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
-    <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
-    <Copyright>(c) 2021 edi.wang</Copyright>
-    <PackageTags>Captcha</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>Generate and Validate Captcha Images in ASP.NET Core</Description>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
-  </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
+	</ItemGroup>
 </Project>

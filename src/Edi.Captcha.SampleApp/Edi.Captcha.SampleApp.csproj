@@ -2,13 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
-
-
-  <ItemGroup>
-  </ItemGroup>
-
 
   <ItemGroup>
     <ProjectReference Include="..\Edi.Captcha\Edi.Captcha.csproj" />

@@ -36,7 +36,7 @@ namespace Edi.Captcha
 
         private static string GetAvailableFontForLinux()
         {
-            var fontList = new[] { "Arial", "Verdana", "Helvetica", "Tahoma", "Terminal", "Open Sans", "Ubuntu Mono" };
+            var fontList = new[] { "Arial", "Verdana", "Helvetica", "Tahoma", "Terminal", "Open Sans", "Monospace", "Ubuntu Mono" };
             return fontList.FirstOrDefault(fontName => SystemFonts.Collection.TryFind(fontName, out _));
         }
     }
