@@ -1,6 +1,11 @@
-﻿@model HomeModel
+﻿@using SixLabors.Fonts
+@model HomeModel
 @section scripts{
     <partial name="_ValidationScriptsPartial" />
+}
+
+@{
+    var fonts = SystemFonts.Collection.Families;
 }
 
 <form asp-action="Index" asp-controller="Home" method="post">
@@ -23,3 +28,11 @@
     </div>
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
+
+<h5>System Fonts</h5>
+<ul>
+    @foreach (var item in fonts)
+    {
+        <li>@item.Name</li>
+    }
+</ul>
