@@ -33,7 +33,7 @@ namespace Edi.Captcha
 
                     var location = new PointF(x + position, y);
                     imgText.Mutate(ctx => ctx.DrawText(c.ToString(), font, GetRandomDeepColor(), location));
-                    position += TextMeasurer.Measure(c.ToString(), new RendererOptions(font, location)).Width;
+                    position += TextMeasurer.Measure(c.ToString(), new TextOptions(font)).Width;
                 }
 
                 Random random = new Random();

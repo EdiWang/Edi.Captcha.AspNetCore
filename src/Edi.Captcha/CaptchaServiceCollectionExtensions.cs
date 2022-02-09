@@ -49,7 +49,7 @@ namespace Edi.Captcha
                 "DejaVu Sans", 
                 "DejaVu Sans Mono"
             };
-            return fontList.FirstOrDefault(fontName => SystemFonts.Collection.TryFind(fontName, out _));
+            return fontList.FirstOrDefault(fontName => SystemFonts.Collection.TryGet(fontName, out _));
         }
     }
 }
