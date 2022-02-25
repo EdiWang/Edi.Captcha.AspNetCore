@@ -111,12 +111,12 @@ namespace Edi.Captcha.Tests
             var middleware = new CaptchaImageMiddleware(app);
 
             _captchaMock.Setup(p =>
-                p.GenerateCaptchaImageBytes(It.IsAny<ISession>(), It.IsAny<int>(), It.IsAny<int>()))
+                p.GenerateCaptchaImageBytes(It.IsAny<ISession>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
                 .Returns(Array.Empty<byte>());
 
             await middleware.Invoke(httpContextMock.Object, _captchaMock.Object);
 
-            _captchaMock.Verify(p => p.GenerateCaptchaImageBytes(It.IsAny<ISession>(), It.IsAny<int>(), It.IsAny<int>()));
+            _captchaMock.Verify(p => p.GenerateCaptchaImageBytes(It.IsAny<ISession>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()));
         }
     }
 }
