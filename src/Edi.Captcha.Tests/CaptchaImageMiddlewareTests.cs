@@ -102,6 +102,7 @@ public class CaptchaImageMiddlewareTests
 
         var repMock = new Mock<HttpResponse>();
         repMock.Setup(p => p.Body).Returns(new MemoryStream());
+        repMock.Setup(p => p.Headers).Returns(new HeaderDictionary());
 
         var httpContextMock = new Mock<HttpContext>();
         httpContextMock.Setup(p => p.Session).Returns(new FakeSession());
