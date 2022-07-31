@@ -30,6 +30,12 @@ public class CaptchaImageMiddleware
 
             context.Response.StatusCode = StatusCodes.Status200OK;
             context.Response.ContentType = "image/png";
+
+            if (Options.DisableCache)
+            {
+                context.Response.Headers.CacheControl = "no-cache,no-store";
+            }
+
             await context.Response.Body.WriteAsync(bytes.AsMemory(0, bytes.Length), context.RequestAborted);
         }
         else
@@ -55,4 +61,6 @@ public class CaptchaImageMiddlewareOptions
     public int ImageWidth { get; set; }
 
     public int ImageHeight { get; set; }
+
+    public bool DisableCache { get; set; } = true;
 }
