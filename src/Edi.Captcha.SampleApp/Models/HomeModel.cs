@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Edi.Captcha.SampleApp.Models
+namespace Edi.Captcha.SampleApp.Models;
+
+public class HomeModel
 {
-    public class HomeModel
-    {
-        [Required]
-        [StringLength(4)]
-        public string CaptchaCode { get; set; }
-    }
+    [Required]
+    [StringLength(4)]
+    public string CaptchaCode { get; set; }
 }

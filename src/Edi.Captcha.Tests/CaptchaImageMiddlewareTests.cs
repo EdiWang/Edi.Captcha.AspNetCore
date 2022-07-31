@@ -10,113 +10,112 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Edi.Captcha.Tests
+namespace Edi.Captcha.Tests;
+
+[TestFixture]
+[ExcludeFromCodeCoverage]
+public class CaptchaImageMiddlewareTests
 {
-    [TestFixture]
-    [ExcludeFromCodeCoverage]
-    public class CaptchaImageMiddlewareTests
+    private MockRepository _mockRepository;
+    private Mock<ISessionBasedCaptcha> _captchaMock;
+
+    [SetUp]
+    public void SetUp()
     {
-        private MockRepository _mockRepository;
-        private Mock<ISessionBasedCaptcha> _captchaMock;
+        _mockRepository = new(MockBehavior.Default);
+        _captchaMock = _mockRepository.Create<ISessionBasedCaptcha>();
+    }
 
-        [SetUp]
-        public void SetUp()
+    [Test]
+    public void UseCaptchaImageMiddlewareExtensions()
+    {
+        var serviceCollection = new ServiceCollection();
+        var applicationBuilder = new ApplicationBuilder(serviceCollection.BuildServiceProvider());
+
+        applicationBuilder.UseCaptchaImage(options => { });
+
+        var app = applicationBuilder.Build();
+
+        var type = app.Target.GetType();
+        Assert.AreEqual(nameof(UseMiddlewareExtensions), type.DeclaringType.Name);
+    }
+
+    class FakeSession : ISession
+    {
+        public bool IsAvailable => true;
+
+        public string Id => "996";
+
+        public IEnumerable<string> Keys => new List<string>();
+
+        public void Clear()
         {
-            _mockRepository = new MockRepository(MockBehavior.Default);
-            _captchaMock = _mockRepository.Create<ISessionBasedCaptcha>();
+
         }
 
-        [Test]
-        public void UseCaptchaImageMiddlewareExtensions()
+        public Task CommitAsync(CancellationToken cancellationToken = default)
         {
-            var serviceCollection = new ServiceCollection();
-            var applicationBuilder = new ApplicationBuilder(serviceCollection.BuildServiceProvider());
-
-            applicationBuilder.UseCaptchaImage(options => { });
-
-            var app = applicationBuilder.Build();
-
-            var type = app.Target.GetType();
-            Assert.AreEqual(nameof(UseMiddlewareExtensions), type.DeclaringType.Name);
+            return Task.CompletedTask;
         }
 
-        class FakeSession : ISession
+        public Task LoadAsync(CancellationToken cancellationToken = default)
         {
-            public bool IsAvailable => true;
-
-            public string Id => "996";
-
-            public IEnumerable<string> Keys => new List<string>();
-
-            public void Clear()
-            {
-
-            }
-
-            public Task CommitAsync(CancellationToken cancellationToken = default)
-            {
-                return Task.CompletedTask;
-            }
-
-            public Task LoadAsync(CancellationToken cancellationToken = default)
-            {
-                return Task.CompletedTask;
-            }
-
-            public void Remove(string key)
-            {
-            }
-
-            public void Set(string key, byte[] value)
-            {
-            }
-
-            public bool TryGetValue(string key, out byte[] value)
-            {
-                value = null;
-                return true;
-            }
+            return Task.CompletedTask;
         }
 
-        [Test]
-        public async Task Invoke_OK()
+        public void Remove(string key)
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging();
-            serviceCollection.AddDistributedMemoryCache();
-            serviceCollection.AddSession();
-            serviceCollection.AddSessionBasedCaptcha();
+        }
 
-            var applicationBuilder = new ApplicationBuilder(serviceCollection.BuildServiceProvider());
-            applicationBuilder.UseSession().UseCaptchaImage(options =>
-            {
-                options.RequestPath = "/captcha-image";
-                options.ImageHeight = 36;
-                options.ImageWidth = 100;
-            });
+        public void Set(string key, byte[] value)
+        {
+        }
 
-            var app = applicationBuilder.Build();
+        public bool TryGetValue(string key, out byte[] value)
+        {
+            value = null;
+            return true;
+        }
+    }
 
-            var reqMock = new Mock<HttpRequest>();
-            reqMock.SetupGet(r => r.Path).Returns("/captcha-image");
+    [Test]
+    public async Task Invoke_OK()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging();
+        serviceCollection.AddDistributedMemoryCache();
+        serviceCollection.AddSession();
+        serviceCollection.AddSessionBasedCaptcha();
 
-            var repMock = new Mock<HttpResponse>();
-            repMock.Setup(p => p.Body).Returns(new MemoryStream());
+        var applicationBuilder = new ApplicationBuilder(serviceCollection.BuildServiceProvider());
+        applicationBuilder.UseSession().UseCaptchaImage(options =>
+        {
+            options.RequestPath = "/captcha-image";
+            options.ImageHeight = 36;
+            options.ImageWidth = 100;
+        });
 
-            var httpContextMock = new Mock<HttpContext>();
-            httpContextMock.Setup(p => p.Session).Returns(new FakeSession());
-            httpContextMock.Setup(p => p.Request).Returns(reqMock.Object);
-            httpContextMock.Setup(p => p.Response).Returns(repMock.Object);
+        var app = applicationBuilder.Build();
 
-            var middleware = new CaptchaImageMiddleware(app);
+        var reqMock = new Mock<HttpRequest>();
+        reqMock.SetupGet(r => r.Path).Returns("/captcha-image");
 
-            _captchaMock.Setup(p =>
+        var repMock = new Mock<HttpResponse>();
+        repMock.Setup(p => p.Body).Returns(new MemoryStream());
+
+        var httpContextMock = new Mock<HttpContext>();
+        httpContextMock.Setup(p => p.Session).Returns(new FakeSession());
+        httpContextMock.Setup(p => p.Request).Returns(reqMock.Object);
+        httpContextMock.Setup(p => p.Response).Returns(repMock.Object);
+
+        var middleware = new CaptchaImageMiddleware(app);
+
+        _captchaMock.Setup(p =>
                 p.GenerateCaptchaImageBytes(It.IsAny<ISession>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Returns(Array.Empty<byte>());
+            .Returns(Array.Empty<byte>());
 
-            await middleware.Invoke(httpContextMock.Object, _captchaMock.Object);
+        await middleware.Invoke(httpContextMock.Object, _captchaMock.Object);
 
-            _captchaMock.Verify(p => p.GenerateCaptchaImageBytes(It.IsAny<ISession>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()));
-        }
+        _captchaMock.Verify(p => p.GenerateCaptchaImageBytes(It.IsAny<ISession>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()));
     }
 }

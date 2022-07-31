@@ -2,45 +2,44 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Edi.Captcha.SampleApp.Controllers
+namespace Edi.Captcha.SampleApp.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly ISessionBasedCaptcha _captcha;
+
+    public HomeController(ISessionBasedCaptcha captcha)
     {
-        private readonly ISessionBasedCaptcha _captcha;
+        _captcha = captcha;
+    }
 
-        public HomeController(ISessionBasedCaptcha captcha)
+    public IActionResult Index()
+    {
+        return View(new HomeModel());
+    }
+
+    [HttpPost]
+    public IActionResult Index(HomeModel model)
+    {
+        if (ModelState.IsValid)
         {
-            _captcha = captcha;
+            bool isValidCaptcha = _captcha.Validate(model.CaptchaCode, HttpContext.Session);
+            return Content(isValidCaptcha ? "Success" : "Invalid captcha code");
         }
 
-        public IActionResult Index()
-        {
-            return View(new HomeModel());
-        }
+        return BadRequest();
+    }
 
-        [HttpPost]
-        public IActionResult Index(HomeModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                bool isValidCaptcha = _captcha.Validate(model.CaptchaCode, HttpContext.Session);
-                return Content(isValidCaptcha ? "Success" : "Invalid captcha code");
-            }
+    [Route("captcha-image-action")]
+    public IActionResult CaptchaImage()
+    {
+        var s = _captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
+        return s;
+    }
 
-            return BadRequest();
-        }
-
-        [Route("captcha-image-action")]
-        public IActionResult CaptchaImage()
-        {
-            var s = _captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
-            return s;
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

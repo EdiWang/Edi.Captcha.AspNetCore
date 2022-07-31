@@ -6,66 +6,65 @@ using Microsoft.Extensions.Hosting;
 using System;
 using SixLabors.Fonts;
 
-namespace Edi.Captcha.SampleApp
+namespace Edi.Captcha.SampleApp;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddSession(options =>
         {
-            Configuration = configuration;
+            options.IdleTimeout = TimeSpan.FromMinutes(20);
+            options.Cookie.HttpOnly = true;
+        });
+
+        services.AddMvc();
+
+        //services.AddSessionBasedCaptcha();
+        services.AddSessionBasedCaptcha(option =>
+        {
+            option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
+            option.SessionName = "CaptchaCode";
+            option.FontStyle = FontStyle.Bold;
+            //option.FontName = "Arial";
+            option.CodeLength = 4;
+        });
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
         }
 
-        public IConfiguration Configuration { get; }
-
-        public void ConfigureServices(IServiceCollection services)
+        app.UseStaticFiles();
+        app.UseSession().UseCaptchaImage(options =>
         {
-            services.AddMemoryCache();
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(20);
-                options.Cookie.HttpOnly = true;
-            });
+            options.RequestPath = "/captcha-image";
+            options.ImageHeight = 36;
+            options.ImageWidth = 100;
+        });
 
-            services.AddMvc();
-
-            //services.AddSessionBasedCaptcha();
-            services.AddSessionBasedCaptcha(option =>
-            {
-                option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
-                option.SessionName = "CaptchaCode";
-                option.FontStyle = FontStyle.Bold;
-                //option.FontName = "Arial";
-                option.CodeLength = 4;
-            });
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
-            app.UseStaticFiles();
-            app.UseSession().UseCaptchaImage(options =>
-            {
-                options.RequestPath = "/captcha-image";
-                options.ImageHeight = 36;
-                options.ImageWidth = 100;
-            });
-
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
-            });
-        }
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+            endpoints.MapRazorPages();
+        });
     }
 }

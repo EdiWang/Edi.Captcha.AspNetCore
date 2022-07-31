@@ -1,7 +1,6 @@
-﻿namespace Edi.Captcha
+﻿namespace Edi.Captcha;
+
+public interface ICaptchable
 {
-    public interface ICaptchable
-    {
-        string CaptchaCode { get; set; }
-    }
+    string CaptchaCode { get; set; }
 }
