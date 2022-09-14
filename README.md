@@ -67,9 +67,10 @@ public SomeController(ISessionBasedCaptcha captcha)
 public IActionResult GetCaptchaImage()
 {
     var s = _captcha.GenerateCaptchaImageFileStream(
+        HttpContext.Session,
         100,
-        36,
-        HttpContext.Session);
+        36
+    );
     return s;
 }
 ```
