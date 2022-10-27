@@ -3,8 +3,6 @@ name: .NET
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
@@ -25,4 +23,7 @@ jobs:
       working-directory: ./src
     - name: Generate nuget package
       run: dotnet pack --configuration Release -o nupkg
+      working-directory: ./src
+    - name: Push nuget package
+      run: dotnet nuget push **\*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
       working-directory: ./src
