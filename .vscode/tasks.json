@@ -7,9 +7,11 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Edi.Captcha.SampleApp/Edi.Captcha.SampleApp.csproj"
+                "${workspaceFolder}/src/Edi.Captcha.SampleApp/Edi.Captcha.SampleApp.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$tsc"
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "publish",
@@ -17,9 +19,11 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/src/Edi.Captcha.SampleApp/Edi.Captcha.SampleApp.csproj"
+                "${workspaceFolder}/src/Edi.Captcha.SampleApp/Edi.Captcha.SampleApp.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$tsc"
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "watch",
@@ -28,9 +32,10 @@
             "args": [
                 "watch",
                 "run",
+                "--project",
                 "${workspaceFolder}/src/Edi.Captcha.SampleApp/Edi.Captcha.SampleApp.csproj"
             ],
-            "problemMatcher": "$tsc"
+            "problemMatcher": "$msCompile"
         }
     ]
 }
