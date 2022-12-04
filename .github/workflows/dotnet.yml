@@ -1,9 +1,7 @@
-name: .NET
+name: .NET build and pack
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
     branches: [ master ]
 
 jobs:
@@ -12,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
     - name: Build with dotnet
       run: dotnet build --configuration Release
       working-directory: ./src
@@ -25,4 +23,7 @@ jobs:
       working-directory: ./src
     - name: Generate nuget package
       run: dotnet pack --configuration Release -o nupkg
+      working-directory: ./src
+    - name: Push nuget package
+      run: dotnet nuget push **\*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
       working-directory: ./src
