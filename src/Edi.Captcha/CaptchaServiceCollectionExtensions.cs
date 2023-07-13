@@ -23,7 +23,7 @@ public static class CaptchaServiceCollectionExtensions
 
         var option = new BasicLetterCaptchaOptions
         {
-            Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ",
+            Letters = "2346789ABCDGHKMNPRUVWXYZ",
             SessionName = "CaptchaCode",
             FontName = fontName,
             CodeLength = 4
