@@ -33,7 +33,7 @@ public static class CaptchaImageGenerator
 
                 var location = new PointF(x + position, y);
                 imgText.Mutate(ctx => ctx.DrawText(c.ToString(), font, GetRandomDeepColor(), location));
-                position += TextMeasurer.Measure(c.ToString(), new(font)).Width;
+                position += TextMeasurer.MeasureBounds(c.ToString(), new(font)).Width;
             }
 
             Random random = new Random();
@@ -60,7 +60,7 @@ public static class CaptchaImageGenerator
                 var color = GetRandomDeepColor();
                 var startPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
                 var endPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
-                img.Mutate(ctx => ctx.DrawLines(color, 1, startPoint, endPoint));
+                img.Mutate(ctx => ctx.DrawLine(color, 1, startPoint, endPoint));
             }
 
             // merge layers
