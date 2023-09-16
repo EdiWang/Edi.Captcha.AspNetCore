@@ -1,23 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-		<Authors>Edi Wang</Authors>
-		<Company>edi.wang</Company>
-		<AssemblyVersion>3.17.0.0</AssemblyVersion>
-		<FileVersion>3.17.0.0</FileVersion>
-		<Version>3.17.0</Version>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
-		<PackageProjectUrl>https://edi.wang</PackageProjectUrl>
-		<Copyright>(c) 2023 edi.wang</Copyright>
-		<PackageTags>Captcha</PackageTags>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Description>Generate and Validate Captcha Images in ASP.NET Core</Description>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-		
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
-	</ItemGroup>
+    <PropertyGroup>
+        <Version>3.18.0</Version>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Company>edi.wang</Company>
+        <Authors>Edi Wang</Authors>
+        <Description>Generate and Validate Captcha Images in ASP.NET Core</Description>
+        <PackageTags>Captcha</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <AssemblyVersion>3.18.0.0</AssemblyVersion>
+        <FileVersion>3.18.0.0</FileVersion>
+        <Copyright>(c) 2023 edi.wang</Copyright>
+    </PropertyGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.0" />
+    </ItemGroup>
 </Project>
