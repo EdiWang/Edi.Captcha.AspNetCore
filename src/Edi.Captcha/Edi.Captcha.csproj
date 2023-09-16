@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Version>3.17.1</Version>
+        <Version>3.18.0</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Company>edi.wang</Company>
         <Authors>Edi Wang</Authors>
@@ -10,8 +10,8 @@
         <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
         <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-        <AssemblyVersion>3.17.0.0</AssemblyVersion>
-        <FileVersion>3.17.0.0</FileVersion>
+        <AssemblyVersion>3.18.0.0</AssemblyVersion>
+        <FileVersion>3.18.0.0</FileVersion>
         <Copyright>(c) 2023 edi.wang</Copyright>
     </PropertyGroup>
     <ItemGroup>
