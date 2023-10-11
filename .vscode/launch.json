@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Edi.Captcha.SampleApp/bin/Debug/net7.0/Edi.Captcha.SampleApp.dll",
+            "program": "${workspaceFolder}/src/Edi.Captcha.SampleApp/bin/Debug/net8.0/Edi.Captcha.SampleApp.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Edi.Captcha.SampleApp",
             "stopAtEntry": false,

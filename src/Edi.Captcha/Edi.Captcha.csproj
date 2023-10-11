@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Version>3.18.0</Version>
+        <Version>3.19.0</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Company>edi.wang</Company>
         <Authors>Edi Wang</Authors>
@@ -9,13 +9,17 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
         <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-        <AssemblyVersion>3.18.0.0</AssemblyVersion>
-        <FileVersion>3.18.0.0</FileVersion>
+        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
         <Copyright>(c) 2023 edi.wang</Copyright>
+        <PackageIcon>edi-logo-blue.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\..\img\edi-logo-blue.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>
