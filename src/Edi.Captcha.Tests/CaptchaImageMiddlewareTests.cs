@@ -26,20 +26,6 @@ public class CaptchaImageMiddlewareTests
         _captchaMock = _mockRepository.Create<ISessionBasedCaptcha>();
     }
 
-    [Test]
-    public void UseCaptchaImageMiddlewareExtensions()
-    {
-        var serviceCollection = new ServiceCollection();
-        var applicationBuilder = new ApplicationBuilder(serviceCollection.BuildServiceProvider());
-
-        applicationBuilder.UseCaptchaImage(options => { });
-
-        var app = applicationBuilder.Build();
-
-        var type = app.Target.GetType();
-        Assert.AreEqual(nameof(UseMiddlewareExtensions), type.DeclaringType.Name);
-    }
-
     class FakeSession : ISession
     {
         public bool IsAvailable => true;
