@@ -1,25 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Version>3.19.0</Version>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Company>edi.wang</Company>
-        <Authors>Edi Wang</Authors>
-        <Description>Generate and Validate Captcha Images in ASP.NET Core</Description>
-        <PackageTags>Captcha</PackageTags>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
-        <Copyright>(c) 2023 edi.wang</Copyright>
-        <PackageIcon>edi-logo-blue.png</PackageIcon>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-    </PropertyGroup>
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
-        <None Include="..\..\img\edi-logo-blue.png" Pack="true" PackagePath="\"/>
-    </ItemGroup>
+  <PropertyGroup>
+    <Version>3.19.1</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>edi.wang</Company>
+    <Authors>Edi Wang</Authors>
+    <Description>Generate and Validate Captcha Images in ASP.NET Core</Description>
+    <PackageTags>Captcha</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/EdiWang/Edi.Captcha.AspNetCore</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <Copyright>(c) 2023 edi.wang</Copyright>
+    <PackageIcon>edi-logo-blue.png</PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\img\edi-logo-blue.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>
