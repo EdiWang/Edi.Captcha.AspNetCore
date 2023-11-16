@@ -4,15 +4,8 @@ using System.Diagnostics;
 
 namespace Edi.Captcha.SampleApp.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ISessionBasedCaptcha captcha) : Controller
 {
-    private readonly ISessionBasedCaptcha _captcha;
-
-    public HomeController(ISessionBasedCaptcha captcha)
-    {
-        _captcha = captcha;
-    }
-
     public IActionResult Index()
     {
         return View(new HomeModel());
@@ -23,7 +16,7 @@ public class HomeController : Controller
     {
         if (ModelState.IsValid)
         {
-            bool isValidCaptcha = _captcha.Validate(model.CaptchaCode, HttpContext.Session);
+            bool isValidCaptcha = captcha.Validate(model.CaptchaCode, HttpContext.Session);
             return Content(isValidCaptcha ? "Success" : "Invalid captcha code");
         }
 
@@ -33,7 +26,7 @@ public class HomeController : Controller
     [Route("captcha-image-action")]
     public IActionResult CaptchaImage()
     {
-        var s = _captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
+        var s = captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
         return s;
     }
 
