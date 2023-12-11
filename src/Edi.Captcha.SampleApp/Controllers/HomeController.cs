@@ -24,9 +24,9 @@ public class HomeController(ISessionBasedCaptcha captcha) : Controller
     }
 
     [Route("captcha-image-action")]
-    public IActionResult CaptchaImage()
+    public IActionResult CaptchaImage(int width, int height)
     {
-        var s = captcha.GenerateCaptchaImageFileStream(HttpContext.Session);
+        var s = captcha.GenerateCaptchaImageFileStream(HttpContext.Session, width, height);
         return s;
     }
 
