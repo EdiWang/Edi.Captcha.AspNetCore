@@ -26,24 +26,21 @@ public static class CaptchaImageGenerator
 
             Font font = SystemFonts.CreateFont(fontName, fontSize, fontStyle);
 
+            Random random = new Random();
+            
             foreach (char c in captchaCode)
             {
                 var x = rand.Next(5, 10);
                 var y = rand.Next(6, 13);
 
+                var degrees = random.Next(0, 10) * (random.Next(-10, 10) > 0 ? 1 : -1);
+
                 var location = new PointF(x + position, y);
-                imgText.Mutate(ctx => ctx.DrawText(c.ToString(), font, GetRandomDeepColor(), location));
+                imgText.Mutate(ctx => 
+                    ctx.SetDrawingTransform(Matrix3x2Extensions.CreateRotationDegrees(degrees, new(0, 0)))
+                        .DrawText(c.ToString(), font, GetRandomDeepColor(), location));
                 position += TextMeasurer.MeasureBounds(c.ToString(), new(font)).Width;
             }
-
-            Random random = new Random();
-            var builder = new AffineTransformBuilder();
-            var rWidth = random.Next(10, width);
-            var rHeight = random.Next(10, height);
-            var pointF = new PointF(rWidth, rHeight);
-            var degrees = random.Next(0, 10) * (random.Next(-10, 10) > 0 ? 1 : -1);
-            var rotation = builder.PrependRotationDegrees(degrees, pointF);
-            imgText.Mutate(ctx => ctx.Transform(rotation));
 
             // background layer
             int low = 180, high = 255;

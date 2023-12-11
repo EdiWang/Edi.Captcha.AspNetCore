@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>3.19.2</Version>
+    <Version>3.20.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>edi.wang</Company>
     <Authors>Edi Wang</Authors>
