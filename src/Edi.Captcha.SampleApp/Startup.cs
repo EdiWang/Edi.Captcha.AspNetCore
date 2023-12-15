@@ -31,6 +31,7 @@ public class Startup(IConfiguration configuration)
             option.FontStyle = FontStyle.Bold;
             //option.FontName = "Arial";
             option.CodeLength = 4;
+            //option.DrawLines = false;
         });
     }
 

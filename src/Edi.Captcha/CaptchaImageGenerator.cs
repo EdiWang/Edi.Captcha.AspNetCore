@@ -12,7 +12,8 @@ namespace Edi.Captcha;
 
 public static class CaptchaImageGenerator
 {
-    public static CaptchaResult GetImage(int width, int height, string captchaCode, string fontName, FontStyle fontStyle = FontStyle.Regular)
+    public static CaptchaResult GetImage(
+        int width, int height, string captchaCode, string fontName, FontStyle fontStyle = FontStyle.Regular, bool drawLines = true)
     {
         using var ms = new MemoryStream();
         var rand = new Random();
@@ -27,7 +28,7 @@ public static class CaptchaImageGenerator
             Font font = SystemFonts.CreateFont(fontName, fontSize, fontStyle);
 
             Random random = new Random();
-            
+
             foreach (char c in captchaCode)
             {
                 var x = rand.Next(5, 10);
@@ -36,7 +37,7 @@ public static class CaptchaImageGenerator
                 var degrees = random.Next(0, 10) * (random.Next(-10, 10) > 0 ? 1 : -1);
 
                 var location = new PointF(x + position, y);
-                imgText.Mutate(ctx => 
+                imgText.Mutate(ctx =>
                     ctx.SetDrawingTransform(Matrix3x2Extensions.CreateRotationDegrees(degrees, new(0, 0)))
                         .DrawText(c.ToString(), font, GetRandomDeepColor(), location));
                 position += TextMeasurer.MeasureBounds(c.ToString(), new(font)).Width;
@@ -51,13 +52,16 @@ public static class CaptchaImageGenerator
             var img = new Image<Rgba32>(width, height);
             img.Mutate(ctx => ctx.BackgroundColor(backColor));
 
-            // lines
-            for (var i = 0; i < rand.Next(3, 7); i++)
+            if (drawLines)
             {
-                var color = GetRandomDeepColor();
-                var startPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
-                var endPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
-                img.Mutate(ctx => ctx.DrawLine(color, 1, startPoint, endPoint));
+                // lines
+                for (var i = 0; i < rand.Next(3, 7); i++)
+                {
+                    var color = GetRandomDeepColor();
+                    var startPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
+                    var endPoint = new PointF(rand.Next(0, width), rand.Next(0, height));
+                    img.Mutate(ctx => ctx.DrawLine(color, 1, startPoint, endPoint));
+                }
             }
 
             // merge layers

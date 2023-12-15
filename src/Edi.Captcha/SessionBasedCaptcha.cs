@@ -9,13 +9,9 @@ namespace Edi.Captcha;
 public class SessionBasedCaptchaOptions
 {
     public string SessionName { get; set; }
-    public FontStyle FontStyle { get; set; }
+    public FontStyle FontStyle { get; set; } = FontStyle.Regular;
     public string FontName { get; set; }
-
-    public SessionBasedCaptchaOptions()
-    {
-        FontStyle = FontStyle.Regular;
-    }
+    public bool DrawLines { get; set; } = true;
 }
 
 public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
@@ -29,7 +25,7 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
         EnsureHttpSession(httpSession);
 
         var captchaCode = GenerateCaptchaCode();
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle);
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle, Options.DrawLines);
         httpSession.SetString(sessionKeyName ?? Options.SessionName, result.CaptchaCode);
         return result.CaptchaByteData;
     }
@@ -39,7 +35,7 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
         EnsureHttpSession(httpSession);
 
         var captchaCode = GenerateCaptchaCode();
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle);
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle, Options.DrawLines);
         httpSession.SetString(sessionKeyName ?? Options.SessionName, result.CaptchaCode);
         Stream s = new MemoryStream(result.CaptchaByteData);
         return new(s, "image/png");
