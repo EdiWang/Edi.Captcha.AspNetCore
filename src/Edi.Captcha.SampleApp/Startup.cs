@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Security.Cryptography;
 using SixLabors.Fonts;
 
 namespace Edi.Captcha.SampleApp;
@@ -23,6 +24,9 @@ public class Startup(IConfiguration configuration)
 
         services.AddMvc();
 
+        var magic1 = Convert.ToBase64String(SHA256.Create().ComputeHash(BitConverter.GetBytes(0x7DB14)))[21..25];
+        var magic2 = Convert.ToBase64String(SHA256.Create().ComputeHash(BitConverter.GetBytes(0x78E10)))[13..17];
+
         //services.AddSessionBasedCaptcha();
         services.AddSessionBasedCaptcha(option =>
         {
@@ -32,6 +36,7 @@ public class Startup(IConfiguration configuration)
             //option.FontName = "Arial";
             option.CodeLength = 4;
             //option.DrawLines = false;
+            option.BlockedCodes = [magic1, magic2];
         });
     }
 

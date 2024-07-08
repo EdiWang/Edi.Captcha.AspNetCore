@@ -38,6 +38,6 @@ public class BasicLetterCaptcha : SessionBasedCaptcha
             sb.Append(_options.Letters[index]);
         }
 
-        return sb.ToString();
+        return sb.ToString().ToUpper();
     }
 }
