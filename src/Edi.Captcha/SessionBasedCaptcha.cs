@@ -13,7 +13,7 @@ public class SessionBasedCaptchaOptions
     public FontStyle FontStyle { get; set; } = FontStyle.Regular;
     public string FontName { get; set; }
     public bool DrawLines { get; set; } = true;
-    public string[] BlockedCodes { get; set; }
+    public string[] BlockedCodes { get; set; } = [];
 }
 
 public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
@@ -28,7 +28,6 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
 
         var captchaCode = GenerateCaptchaCode();
 
-        Options.BlockedCodes ??= [];
         while (Options.BlockedCodes.Contains(captchaCode))
         {
             captchaCode = GenerateCaptchaCode();
