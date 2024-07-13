@@ -27,6 +27,8 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
         EnsureHttpSession(httpSession);
 
         var captchaCode = GenerateCaptchaCode();
+
+        Options.BlockedCodes ??= [];
         while (Options.BlockedCodes.Contains(captchaCode))
         {
             captchaCode = GenerateCaptchaCode();
