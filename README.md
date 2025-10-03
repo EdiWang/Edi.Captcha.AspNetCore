@@ -37,7 +37,7 @@ services.AddSessionBasedCaptcha();
 
 ```csharp
 // Don't forget to add this line in your `Configure` method.
- app.UseSession();
+app.UseSession();
 ```
 
 or you can customize the options
@@ -186,7 +186,6 @@ public async Task<IActionResult> SomeAction(YourModelWithCaptchaCode model)
 }
 ```
 
-
 ## Stateless Captcha (Recommended for Scalable Applications)
 
 **Advantages of Stateless Captcha:**
@@ -227,154 +226,13 @@ public class StatelessHomeModel
 }
 ```
 
-### 3. Example Controller
+### 3. Example Controller and View
 
-```csharp
-using Edi.Captcha.SampleApp.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Diagnostics;
+See: [src\Edi.Captcha.SampleApp\Controllers\StatelessController.cs](src/Edi.Captcha.SampleApp/Controllers/StatelessController.cs) and [src\Edi.Captcha.SampleApp\Views\Stateless\Index.cshtml](src/Edi.Captcha.SampleApp/Views/Stateless/Index.cshtml) for a complete example.
 
-namespace Edi.Captcha.SampleApp.Controllers;
-
-public class StatelessController(IStatelessCaptcha captcha) : Controller
-{
-    public IActionResult Index()
-    {
-        return View(new StatelessHomeModel());
-    }
-
-    [HttpPost]
-    public IActionResult Index(StatelessHomeModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            bool isValidCaptcha = captcha.Validate(model.CaptchaCode, model.CaptchaToken);
-            return Content(isValidCaptcha ? "Success - Stateless captcha validated!" : "Invalid captcha code");
-        }
-
-        return BadRequest();
-    }
-
-    [Route("get-stateless-captcha")]
-    public IActionResult GetStatelessCaptcha()
-    {
-        var result = captcha.GenerateCaptcha(100, 36);
-        
-        return Json(new { 
-            token = result.Token, 
-            imageBase64 = Convert.ToBase64String(result.ImageBytes)
-        });
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-}
-```
-
-### 4. Example View
-
-```razor
-@model StatelessHomeModel
-@{
-    ViewData["Title"] = "Stateless Captcha Example";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Stateless Captcha Example</h1>
-    <p>This example shows how to use stateless captcha that works in clustered environments.</p>
-</div>
-
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <div class="card">
-            <div class="card-header">
-                <h5>Stateless Captcha Form</h5>
-            </div>
-            <div class="card-body">
-                <form asp-action="Index" method="post" id="stateless-form">
-                    <div class="form-group mb-3">
-                        <label>Captcha Image:</label>
-                        <div class="d-flex align-items-center">
-                            <img id="captcha-image" src="" alt="Captcha" class="me-2" style="border: 1px solid #ccc;" />
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshCaptcha()">
-                                🔄 Refresh
-                            </button>
-                        </div>
-                        <small class="form-text text-muted">Click refresh to get a new captcha</small>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label asp-for="CaptchaCode">Enter Captcha Code:</label>
-                        <input asp-for="CaptchaCode" class="form-control" placeholder="Enter the code from image" autocomplete="off" />
-                        <span asp-validation-for="CaptchaCode" class="text-danger"></span>
-                    </div>
-
-                    <input type="hidden" asp-for="CaptchaToken" id="captcha-token" />
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Session-based Example</a>
-                    </div>
-                </form>
-
-                <div class="mt-4">
-                    <h6>Advantages of Stateless Captcha:</h6>
-                    <ul class="small">
-                        <li>✅ Works in clustered/load-balanced environments</li>
-                        <li>✅ No server-side session storage required</li>
-                        <li>✅ Built-in expiration through encryption</li>
-                        <li>✅ Secure token-based validation</li>
-                        <li>✅ Better scalability</li>
-                        <li>✅ Single API call for both token and image</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    async function refreshCaptcha() {
-        try {
-            const response = await fetch('/get-stateless-captcha');
-            const data = await response.json();
-            
-            // Set the token for validation
-            document.getElementById('captcha-token').value = data.token;
-            
-            // Set the image source using base64 data
-            document.getElementById('captcha-image').src = `data:image/png;base64,${data.imageBase64}`;
-            
-            // Clear the input
-            document.getElementById('CaptchaCode').value = '';
-        } catch (error) {
-            console.error('Error refreshing captcha:', error);
-            alert('Failed to load captcha. Please try again.');
-        }
-    }
-
-    // Initialize captcha on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        refreshCaptcha();
-    });
-</script>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
-```
-
-## Cluster/Load Balancer Configuration
+### Cluster/Load Balancer Configuration
 
 ⚠️ **Important for Production Deployments**: The stateless captcha uses ASP.NET Core's Data Protection API for token encryption. In clustered environments or behind load balancers, you **must** configure shared data protection keys to ensure captcha tokens can be validated on any server.
-
-### Configure Shared Data Protection Keys
-
-Choose one of the following approaches based on your infrastructure:
 
 #### Option 1: File System (Network Share)
 ```csharp
@@ -436,11 +294,11 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### Single Server Deployment
+#### Single Server Deployment
 
 For single server deployments, no additional configuration is required. The default Data Protection configuration will work correctly.
 
-### Testing Cluster Configuration
+#### Testing Cluster Configuration
 
 To verify your cluster configuration is working:
 
@@ -450,3 +308,70 @@ To verify your cluster configuration is working:
 
 If validation fails with properly entered captcha codes, check your Data Protection configuration.
 
+## Shared Key Stateless Captcha (Recommended for Scalable Applications without DPAPI)
+
+**When to use Shared Key Stateless Captcha:**
+- ✅ Full control over encryption keys
+- ✅ Works without ASP.NET Core Data Protection API
+- ✅ Simpler cluster configuration
+- ✅ Custom key rotation strategies
+- ✅ Works across different application frameworks
+- ✅ No dependency on external storage for keys
+
+### 1. Register in DI with Shared Key
+
+```csharp
+services.AddSharedKeyStatelessCaptcha(options =>
+{
+    options.SharedKey = "your-32-byte-base64-encoded-key"; // Generate securely
+    options.FontStyle = FontStyle.Bold;
+    options.DrawLines = true;
+    options.TokenExpiration = TimeSpan.FromMinutes(5);
+});
+```
+
+### 2. Generate Secure Shared Key
+
+**Important**: Use a cryptographically secure random key. Here's how to generate one:
+
+```csharp
+// Generate a secure 256-bit key (one-time setup)
+using (var rng = RandomNumberGenerator.Create())
+{
+    var keyBytes = new byte[32]; // 256 bits
+    rng.GetBytes(keyBytes);
+    var base64Key = Convert.ToBase64String(keyBytes);
+    Console.WriteLine($"Shared Key: {base64Key}");
+}
+```
+
+### 3. Configuration Options
+
+#### Configuration File (appsettings.json)
+```json
+{
+  "CaptchaSettings": {
+    "SharedKey": "your-generated-base64-key-here",
+    "TokenExpirationMinutes": 5
+  }
+}
+```
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    var captchaKey = Configuration["CaptchaSettings:SharedKey"];
+    var expirationMinutes = Configuration.GetValue<int>("CaptchaSettings:TokenExpirationMinutes", 5);
+    
+    services.AddSharedKeyStatelessCaptcha(options =>
+    {
+        options.SharedKey = captchaKey;
+        options.TokenExpiration = TimeSpan.FromMinutes(expirationMinutes);
+        // Other options...
+    });
+}
+```
+
+### 4. Example Controller and View
+
+See: [src\Edi.Captcha.SampleApp\Controllers\SharedKeyStatelessController.cs](src/Edi.Captcha.SampleApp/Controllers/SharedKeyStatelessController.cs) and [src\Edi.Captcha.SampleApp\Views\SharedKeyStateless\Index.cshtml](src/Edi.Captcha.SampleApp/Views/SharedKeyStateless/Index.cshtml) for a complete example.
