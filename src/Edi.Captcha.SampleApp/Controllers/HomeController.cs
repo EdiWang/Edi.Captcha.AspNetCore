@@ -8,11 +8,11 @@ public class HomeController(ISessionBasedCaptcha captcha) : Controller
 {
     public IActionResult Index()
     {
-        return View(new HomeModel());
+        return View(new SessionCaptchaModel());
     }
 
     [HttpPost]
-    public IActionResult Index(HomeModel model)
+    public IActionResult Index(SessionCaptchaModel model)
     {
         if (ModelState.IsValid)
         {

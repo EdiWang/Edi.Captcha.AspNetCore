@@ -1,4 +1,4 @@
-﻿@model SharedKeyStatelessHomeModel
+﻿@model SharedKeyCaptchaModel
 @{
     ViewData["Title"] = "Shared Key Stateless Captcha Example";
 }
@@ -36,7 +36,7 @@
                     <input type="hidden" asp-for="CaptchaToken" id="captcha-token" />
 
                     <div class="form-group">
-                        <button type="submit" class="btn btn-warning">Submit</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
                         <a asp-controller="Stateless" asp-action="Index" class="btn btn-secondary">Stateless Example</a>
                         <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Session-based Example</a>
                     </div>

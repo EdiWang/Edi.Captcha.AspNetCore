@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Edi.Captcha.SampleApp.Models;
 
-public class HomeModel
+public class StatelessCaptchaModel
 {
     [Required]
     [StringLength(4)]
     public string CaptchaCode { get; set; }
+
+    public string CaptchaToken { get; set; }
 }

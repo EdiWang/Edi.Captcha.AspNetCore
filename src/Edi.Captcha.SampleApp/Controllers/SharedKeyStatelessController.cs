@@ -19,11 +19,11 @@ public class SharedKeyStatelessController : Controller
 
     public IActionResult Index()
     {
-        return View(new SharedKeyStatelessHomeModel());
+        return View(new SharedKeyCaptchaModel());
     }
 
     [HttpPost]
-    public IActionResult Index(SharedKeyStatelessHomeModel model)
+    public IActionResult Index(SharedKeyCaptchaModel model)
     {
         if (ModelState.IsValid)
         {

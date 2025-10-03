@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Edi.Captcha.SampleApp.Models;
 
-public class SharedKeyStatelessHomeModel
+public class SharedKeyCaptchaModel
 {
     [Required]
     [StringLength(4)]
