@@ -5,15 +5,9 @@ using System.Threading.Tasks;
 
 namespace Edi.Captcha;
 
-public class CaptchaImageMiddleware
+public class CaptchaImageMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
     public static CaptchaImageMiddlewareOptions Options { get; set; } = new();
-
-    public CaptchaImageMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
 
     public async Task Invoke(HttpContext context, ISessionBasedCaptcha captcha)
     {
@@ -40,7 +34,7 @@ public class CaptchaImageMiddleware
         }
         else
         {
-            await _next(context);
+            await next(context);
         }
     }
 }

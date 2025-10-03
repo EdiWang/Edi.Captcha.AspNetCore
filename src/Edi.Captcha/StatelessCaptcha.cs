@@ -15,33 +15,26 @@ public class StatelessCaptchaOptions
     public TimeSpan TokenExpiration { get; set; } = TimeSpan.FromMinutes(5);
 }
 
-public abstract class StatelessCaptcha : IStatelessCaptcha
+public abstract class StatelessCaptcha(IDataProtectionProvider dataProtectionProvider, StatelessCaptchaOptions options) : IStatelessCaptcha
 {
-    private readonly IDataProtector _dataProtector;
-    private readonly StatelessCaptchaOptions _options;
-
-    public StatelessCaptcha(IDataProtectionProvider dataProtectionProvider, StatelessCaptchaOptions options)
-    {
-        _dataProtector = dataProtectionProvider.CreateProtector("Edi.Captcha.Stateless");
-        _options = options;
-    }
+    private readonly IDataProtector _dataProtector = dataProtectionProvider.CreateProtector("Edi.Captcha.Stateless");
 
     public abstract string GenerateCaptchaCode();
 
     public StatelessCaptchaResult GenerateCaptcha(int width = 100, int height = 36)
     {
         var captchaCode = GenerateCaptchaCode();
-        while (_options.BlockedCodes.Contains(captchaCode))
+        while (options.BlockedCodes.Contains(captchaCode))
         {
             captchaCode = GenerateCaptchaCode();
         }
 
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, _options.FontName, _options.FontStyle, _options.DrawLines);
-        
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, options.FontName, options.FontStyle, options.DrawLines);
+
         var tokenData = new CaptchaTokenData
         {
             Code = captchaCode,
-            ExpirationTime = DateTimeOffset.UtcNow.Add(_options.TokenExpiration)
+            ExpirationTime = DateTimeOffset.UtcNow.Add(options.TokenExpiration)
         };
 
         var serializedData = JsonSerializer.Serialize(tokenData);

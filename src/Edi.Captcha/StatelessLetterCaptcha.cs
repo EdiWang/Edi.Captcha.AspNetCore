@@ -10,15 +10,11 @@ public class StatelessLetterCaptchaOptions : StatelessCaptchaOptions
     public int CodeLength { get; set; } = 4;
 }
 
-public class StatelessLetterCaptcha : StatelessCaptcha
+public class StatelessLetterCaptcha(
+    IDataProtectionProvider dataProtectionProvider,
+    StatelessLetterCaptchaOptions options) : StatelessCaptcha(dataProtectionProvider, options)
 {
-    private readonly StatelessLetterCaptchaOptions _options;
-
-    public StatelessLetterCaptcha(IDataProtectionProvider dataProtectionProvider, StatelessLetterCaptchaOptions options)
-        : base(dataProtectionProvider, options)
-    {
-        _options = options;
-    }
+    private readonly StatelessLetterCaptchaOptions _options = options;
 
     public override string GenerateCaptchaCode()
     {
