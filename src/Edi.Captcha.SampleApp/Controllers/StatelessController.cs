@@ -9,11 +9,11 @@ public class StatelessController(IStatelessCaptcha captcha) : Controller
 {
     public IActionResult Index()
     {
-        return View(new StatelessHomeModel());
+        return View(new StatelessCaptchaModel());
     }
 
     [HttpPost]
-    public IActionResult Index(StatelessHomeModel model)
+    public IActionResult Index(StatelessCaptchaModel model)
     {
         if (ModelState.IsValid)
         {
@@ -28,9 +28,10 @@ public class StatelessController(IStatelessCaptcha captcha) : Controller
     public IActionResult GetStatelessCaptcha()
     {
         var result = captcha.GenerateCaptcha(100, 36);
-        
-        return Json(new { 
-            token = result.Token, 
+
+        return Json(new
+        {
+            token = result.Token,
             imageBase64 = Convert.ToBase64String(result.ImageBytes)
         });
     }

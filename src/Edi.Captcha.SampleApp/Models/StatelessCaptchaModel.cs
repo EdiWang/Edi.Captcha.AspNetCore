@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Edi.Captcha.SampleApp.Models;
 
-public class StatelessHomeModel
+public class StatelessCaptchaModel
 {
     [Required]
     [StringLength(4)]
     public string CaptchaCode { get; set; }
-    
+
     public string CaptchaToken { get; set; }
 }

@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-
 namespace Edi.Captcha;
 
 public interface IStatelessCaptcha

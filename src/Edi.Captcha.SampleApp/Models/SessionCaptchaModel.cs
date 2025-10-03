@@ -2,7 +2,7 @@
 
 namespace Edi.Captcha.SampleApp.Models;
 
-public class HomeModel
+public class SessionCaptchaModel
 {
     [Required]
     [StringLength(4)]
