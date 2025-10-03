@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SixLabors.Fonts;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SixLabors.Fonts;
 
 namespace Edi.Captcha;
 
@@ -45,21 +45,25 @@ public static class CaptchaServiceCollectionExtensions
         services.AddTransient<IStatelessCaptcha, StatelessLetterCaptcha>();
     }
 
-public static IServiceCollection AddSharedKeyStatelessCaptcha(this IServiceCollection services, Action<SharedKeyStatelessCaptchaOptions> setupAction)
-{
-    if (setupAction == null)
+    public static IServiceCollection AddSharedKeyStatelessCaptcha(this IServiceCollection services, Action<SharedKeyStatelessLetterCaptchaOptions> options = null)
     {
-        throw new ArgumentNullException(nameof(setupAction));
+        string fontName = GetDefaultFontName();
+
+        var option = new SharedKeyStatelessLetterCaptchaOptions
+        {
+            Letters = "2346789ABCDGHKMNPRUVWXYZ",
+            FontName = fontName,
+            CodeLength = 4,
+            TokenExpiration = TimeSpan.FromMinutes(5)
+        };
+
+        options?.Invoke(option);
+
+        services.AddSingleton(option);
+        services.AddTransient<IStatelessCaptcha, SharedKeyStatelessLetterCaptcha>();
+
+        return services;
     }
-
-    var options = new SharedKeyStatelessCaptchaOptions();
-    setupAction(options);
-
-    services.AddSingleton(options);
-    services.AddTransient<IStatelessCaptcha, SharedKeyStatelessLetterCaptcha>();
-
-    return services;
-}
 
     private static string GetDefaultFontName()
     {
