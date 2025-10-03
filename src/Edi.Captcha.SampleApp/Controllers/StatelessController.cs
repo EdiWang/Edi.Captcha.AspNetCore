@@ -28,9 +28,10 @@ public class StatelessController(IStatelessCaptcha captcha) : Controller
     public IActionResult GetStatelessCaptcha()
     {
         var result = captcha.GenerateCaptcha(100, 36);
-        
-        return Json(new { 
-            token = result.Token, 
+
+        return Json(new
+        {
+            token = result.Token,
             imageBase64 = Convert.ToBase64String(result.ImageBytes)
         });
     }

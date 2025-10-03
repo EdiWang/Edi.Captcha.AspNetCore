@@ -1,8 +1,8 @@
 using Edi.Captcha.SampleApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Edi.Captcha.SampleApp.Controllers;
@@ -38,9 +38,10 @@ public class SharedKeyStatelessController : Controller
     public IActionResult GetSharedKeyStatelessCaptcha()
     {
         var result = _captcha.GenerateCaptcha(100, 36);
-        
-        return Json(new { 
-            token = result.Token, 
+
+        return Json(new
+        {
+            token = result.Token,
             imageBase64 = Convert.ToBase64String(result.ImageBytes)
         });
     }

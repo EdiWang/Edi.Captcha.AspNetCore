@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SixLabors.Fonts;
 using System;
 using System.Security.Cryptography;
-using SixLabors.Fonts;
 
 namespace Edi.Captcha.SampleApp;
 

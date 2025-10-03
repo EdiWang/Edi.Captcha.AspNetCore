@@ -12,6 +12,6 @@ public class StatelessLetterCaptcha(
     IDataProtectionProvider dataProtectionProvider,
     StatelessLetterCaptchaOptions options) : StatelessCaptcha(dataProtectionProvider, options)
 {
-    public override string GenerateCaptchaCode() => 
+    public override string GenerateCaptchaCode() =>
         SecureCaptchaGenerator.GenerateSecureCaptchaCode(options.Letters, options.CodeLength);
 }
