@@ -10,16 +10,7 @@ public static class CaptchaServiceCollectionExtensions
 {
     public static void AddSessionBasedCaptcha(this IServiceCollection services, Action<BasicLetterCaptchaOptions> options = null)
     {
-        string fontName = string.Empty;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            fontName = "Arial";
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            fontName = GetAvailableFontForLinux();
-        }
+        string fontName = GetDefaultFontName();
 
         var option = new BasicLetterCaptchaOptions
         {
@@ -34,19 +25,54 @@ public static class CaptchaServiceCollectionExtensions
         services.AddTransient<ISessionBasedCaptcha>(sb => new BasicLetterCaptcha(option));
     }
 
+    public static void AddStatelessCaptcha(this IServiceCollection services, Action<StatelessLetterCaptchaOptions> options = null)
+    {
+        services.AddDataProtection();
+
+        string fontName = GetDefaultFontName();
+
+        var option = new StatelessLetterCaptchaOptions
+        {
+            Letters = "2346789ABCDGHKMNPRUVWXYZ",
+            FontName = fontName,
+            CodeLength = 4,
+            TokenExpiration = TimeSpan.FromMinutes(5)
+        };
+
+        options?.Invoke(option);
+
+        services.AddSingleton(option);
+        services.AddTransient<IStatelessCaptcha, StatelessLetterCaptcha>();
+    }
+
+    private static string GetDefaultFontName()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return "Arial";
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            return GetAvailableFontForLinux();
+        }
+
+        return "Arial";
+    }
+
     private static string GetAvailableFontForLinux()
     {
         var fontList = new[]
         {
-            "Arial", 
-            "Verdana", 
-            "Helvetica", 
-            "Tahoma", 
-            "Terminal", 
-            "Open Sans", 
-            "Monospace", 
+            "Arial",
+            "Verdana",
+            "Helvetica",
+            "Tahoma",
+            "Terminal",
+            "Open Sans",
+            "Monospace",
             "Ubuntu Mono",
-            "DejaVu Sans", 
+            "DejaVu Sans",
             "DejaVu Sans Mono"
         };
         return fontList.FirstOrDefault(fontName => SystemFonts.Collection.TryGet(fontName, out _));
