@@ -74,7 +74,7 @@ public abstract class StatelessCaptcha(IDataProtectionProvider dataProtectionPro
     }
 }
 
-internal class CaptchaTokenData
+public class CaptchaTokenData
 {
     public string Code { get; set; }
     public DateTimeOffset ExpirationTime { get; set; }
