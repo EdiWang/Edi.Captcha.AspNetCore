@@ -1,5 +1,9 @@
 ﻿@using SixLabors.Fonts
 @model HomeModel
+@{
+    ViewData["Title"] = "Session-based Captcha Example";
+}
+
 @section scripts{
     <partial name="_ValidationScriptsPartial" />
 }
@@ -8,31 +12,100 @@
     var fonts = SystemFonts.Collection.Families;
 }
 
-<form asp-action="Index" asp-controller="Home" method="post">
-    <div class="row">
-        <div class="col-6">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <img id="img-captcha" src="~/captcha-image" />
-                </div>
-                <input type="text"
-                       asp-for="CaptchaCode"
-                       class="form-control"
-                       placeholder="Captcha Code"
-                       autocomplete="off"
-                       minlength="4"
-                       maxlength="4" />
+<div class="text-center">
+    <h1 class="display-4">Session-based Captcha Example</h1>
+    <p>This example shows how to use session-based captcha for simple scenarios.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5>Session-based Captcha Form</h5>
             </div>
-            <span asp-validation-for="CaptchaCode" class="text-danger"></span>
+            <div class="card-body">
+                <form asp-action="Index" asp-controller="Home" method="post">
+                    <div class="form-group mb-3">
+                        <label>Captcha Image:</label>
+                        <div class="d-flex align-items-center">
+                            <img id="img-captcha" src="~/captcha-image" alt="Captcha" class="me-2" style="border: 1px solid #ccc;" />
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshSessionCaptcha()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Click refresh to get a new captcha</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CaptchaCode">Enter Captcha Code:</label>
+                        <input type="text"
+                               asp-for="CaptchaCode"
+                               class="form-control"
+                               placeholder="Enter the code from image"
+                               autocomplete="off"
+                               minlength="4"
+                               maxlength="4" />
+                        <span asp-validation-for="CaptchaCode" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                        <a asp-controller="Stateless" asp-action="Index" class="btn btn-secondary">Stateless Example</a>
+                    </div>
+                </form>
+
+                <div class="mt-4">
+                    <h6>Characteristics of Session-based Captcha:</h6>
+                    <ul class="small">
+                        <li>✅ Simple implementation</li>
+                        <li>✅ Automatic cleanup on session expiry</li>
+                        <li>⚠️ Requires session state</li>
+                        <li>⚠️ May not work well in clustered environments</li>
+                        <li>⚠️ Dependent on server-side session storage</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-success">Submit</button>
-</form>
+</div>
 
-<h5>System Fonts</h5>
-<ul>
-    @foreach (var item in fonts)
-    {
-        <li>@item.Name</li>
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h5>Available System Fonts</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @{
+                        var fontList = fonts.ToList();
+                        var itemsPerColumn = (int)Math.Ceiling(fontList.Count / 3.0);
+                    }
+                    @for (int col = 0; col < 3; col++)
+                    {
+                        <div class="col-md-4">
+                            <ul class="list-unstyled small">
+                                @for (int i = col * itemsPerColumn; i < Math.Min((col + 1) * itemsPerColumn, fontList.Count); i++)
+                                {
+                                    <li class="mb-1">@fontList[i].Name</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function refreshSessionCaptcha() {
+        // For session-based captcha, we can simply reload the image with a timestamp to bypass cache
+        const img = document.getElementById('img-captcha');
+        const timestamp = new Date().getTime();
+        img.src = `/captcha-image?t=${timestamp}`;
+        
+        // Clear the input
+        document.getElementById('CaptchaCode').value = '';
     }
-</ul>
+</script>
