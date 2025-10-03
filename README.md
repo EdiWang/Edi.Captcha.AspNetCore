@@ -367,3 +367,86 @@ public class StatelessController(IStatelessCaptcha captcha) : Controller
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 ```
+
+## Cluster/Load Balancer Configuration
+
+⚠️ **Important for Production Deployments**: The stateless captcha uses ASP.NET Core's Data Protection API for token encryption. In clustered environments or behind load balancers, you **must** configure shared data protection keys to ensure captcha tokens can be validated on any server.
+
+### Configure Shared Data Protection Keys
+
+Choose one of the following approaches based on your infrastructure:
+
+#### Option 1: File System (Network Share)
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(@"\\shared-network-path\keys"))
+        .SetApplicationName("YourAppName"); // Must be consistent across all instances
+    
+    services.AddStatelessCaptcha(options =>
+    {
+        // Your captcha configuration
+    });
+}
+```
+
+#### Option 2: Azure Blob Storage
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDataProtection()
+        .PersistKeysToAzureBlobStorage("DefaultEndpointsProtocol=https;AccountName=...", "keys-container", "dataprotection-keys.xml")
+        .SetApplicationName("YourAppName");
+    
+    services.AddStatelessCaptcha(options =>
+    {
+        // Your captcha configuration
+    });
+}
+```
+
+#### Option 3: Redis
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDataProtection()
+        .PersistKeysToStackExchangeRedis(ConnectionMultiplexer.Connect("your-redis-connection"), "DataProtection-Keys")
+        .SetApplicationName("YourAppName");
+    
+    services.AddStatelessCaptcha(options =>
+    {
+        // Your captcha configuration
+    });
+}
+```
+
+#### Option 4: SQL Server
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDataProtection()
+        .PersistKeysToDbContext<YourDbContext>()
+        .SetApplicationName("YourAppName");
+    
+    services.AddStatelessCaptcha(options =>
+    {
+        // Your captcha configuration
+    });
+}
+```
+
+### Single Server Deployment
+
+For single server deployments, no additional configuration is required. The default Data Protection configuration will work correctly.
+
+### Testing Cluster Configuration
+
+To verify your cluster configuration is working:
+
+1. Generate a captcha on Server A
+2. Submit the form to Server B (or any other server)
+3. Validation should succeed
+
+If validation fails with properly entered captcha codes, check your Data Protection configuration.
+
