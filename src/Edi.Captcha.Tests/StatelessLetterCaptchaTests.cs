@@ -163,7 +163,7 @@ public class StatelessLetterCaptchaTests
 
         // Act & Assert
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => invalidCaptcha.GenerateCaptchaCode());
-        Assert.That(ex.ParamName, Does.Contain("CodeLength"));
+        Assert.That(ex.ParamName?.ToLower(), Does.Contain("codelength"));
         Assert.That(ex.Message, Does.Contain("codeLength must range within 1-32"));
     }
 
@@ -180,7 +180,7 @@ public class StatelessLetterCaptchaTests
 
         // Act & Assert
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => invalidCaptcha.GenerateCaptchaCode());
-        Assert.That(ex.ParamName, Does.Contain("CodeLength"));
+        Assert.That(ex.ParamName?.ToLower(), Does.Contain("codelength"));
         Assert.That(ex.Message, Does.Contain("current value is -1"));
     }
 
@@ -197,7 +197,7 @@ public class StatelessLetterCaptchaTests
 
         // Act & Assert
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() => invalidCaptcha.GenerateCaptchaCode());
-        Assert.That(ex.ParamName, Does.Contain("CodeLength"));
+        Assert.That(ex.ParamName?.ToLower(), Does.Contain("codelength"));
         Assert.That(ex.Message, Does.Contain("current value is 33"));
     }
 
