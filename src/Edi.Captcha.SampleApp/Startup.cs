@@ -38,6 +38,14 @@ public class Startup(IConfiguration configuration)
             //option.DrawLines = false;
             option.BlockedCodes = [magic1, magic2];
         });
+
+        // For stateless approach (recommended)
+        services.AddStatelessCaptcha(options =>
+        {
+            options.Letters = "2346789ABCDGHKMNPRUVWXYZ";
+            options.CodeLength = 4;
+            options.TokenExpiration = TimeSpan.FromMinutes(5);
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

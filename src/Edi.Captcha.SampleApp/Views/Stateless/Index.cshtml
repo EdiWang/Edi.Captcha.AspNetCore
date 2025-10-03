@@ -1,0 +1,88 @@
+﻿@model StatelessHomeModel
+@{
+    ViewData["Title"] = "Stateless Captcha Example";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Stateless Captcha Example</h1>
+    <p>This example shows how to use stateless captcha that works in clustered environments.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5>Stateless Captcha Form</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Index" method="post" id="stateless-form">
+                    <div class="form-group mb-3">
+                        <label>Captcha Image:</label>
+                        <div class="d-flex align-items-center">
+                            <img id="captcha-image" src="" alt="Captcha" class="me-2" style="border: 1px solid #ccc;" />
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshCaptcha()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Click refresh to get a new captcha</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CaptchaCode">Enter Captcha Code:</label>
+                        <input asp-for="CaptchaCode" class="form-control" placeholder="Enter the code from image" autocomplete="off" />
+                        <span asp-validation-for="CaptchaCode" class="text-danger"></span>
+                    </div>
+
+                    <input type="hidden" asp-for="CaptchaToken" id="captcha-token" />
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Session-based Example</a>
+                    </div>
+                </form>
+
+                <div class="mt-4">
+                    <h6>Advantages of Stateless Captcha:</h6>
+                    <ul class="small">
+                        <li>✅ Works in clustered/load-balanced environments</li>
+                        <li>✅ No server-side session storage required</li>
+                        <li>✅ Built-in expiration through encryption</li>
+                        <li>✅ Secure token-based validation</li>
+                        <li>✅ Better scalability</li>
+                        <li>✅ Single API call for both token and image</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function refreshCaptcha() {
+        try {
+            const response = await fetch('/get-stateless-captcha');
+            const data = await response.json();
+            
+            // Set the token for validation
+            document.getElementById('captcha-token').value = data.token;
+            
+            // Set the image source using base64 data
+            document.getElementById('captcha-image').src = `data:image/png;base64,${data.imageBase64}`;
+            
+            // Clear the input
+            document.getElementById('CaptchaCode').value = '';
+        } catch (error) {
+            console.error('Error refreshing captcha:', error);
+            alert('Failed to load captcha. Please try again.');
+        }
+    }
+
+    // Initialize captcha on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        refreshCaptcha();
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
