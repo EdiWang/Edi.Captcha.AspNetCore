@@ -45,6 +45,22 @@ public static class CaptchaServiceCollectionExtensions
         services.AddTransient<IStatelessCaptcha, StatelessLetterCaptcha>();
     }
 
+public static IServiceCollection AddSharedKeyStatelessCaptcha(this IServiceCollection services, Action<SharedKeyStatelessCaptchaOptions> setupAction)
+{
+    if (setupAction == null)
+    {
+        throw new ArgumentNullException(nameof(setupAction));
+    }
+
+    var options = new SharedKeyStatelessCaptchaOptions();
+    setupAction(options);
+
+    services.AddSingleton(options);
+    services.AddTransient<IStatelessCaptcha, SharedKeyStatelessLetterCaptcha>();
+
+    return services;
+}
+
     private static string GetDefaultFontName()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))

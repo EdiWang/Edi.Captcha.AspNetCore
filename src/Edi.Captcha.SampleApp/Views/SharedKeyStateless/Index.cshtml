@@ -1,0 +1,102 @@
+﻿@model SharedKeyStatelessHomeModel
+@{
+    ViewData["Title"] = "Shared Key Stateless Captcha Example";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Shared Key Stateless Captcha Example</h1>
+    <p>This example shows how to use shared key stateless captcha for enterprise/multi-server deployments.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5>Shared Key Stateless Captcha Form</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Index" method="post" id="shared-key-stateless-form">
+                    <div class="form-group mb-3">
+                        <label>Captcha Image:</label>
+                        <div class="d-flex align-items-center">
+                            <img id="captcha-image" src="" alt="Captcha" class="me-2" style="border: 1px solid #ccc;" />
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshCaptcha()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Click refresh to get a new captcha</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CaptchaCode">Enter Captcha Code:</label>
+                        <input asp-for="CaptchaCode" class="form-control" placeholder="Enter the code from image" autocomplete="off" />
+                        <span asp-validation-for="CaptchaCode" class="text-danger"></span>
+                    </div>
+
+                    <input type="hidden" asp-for="CaptchaToken" id="captcha-token" />
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-warning">Submit</button>
+                        <a asp-controller="Stateless" asp-action="Index" class="btn btn-secondary">Stateless Example</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Session-based Example</a>
+                    </div>
+                </form>
+
+                <div class="mt-4">
+                    <h6>Advantages of Shared Key Stateless Captcha:</h6>
+                    <ul class="small">
+                        <li>✅ Works in clustered/load-balanced environments</li>
+                        <li>✅ No server-side session storage required</li>
+                        <li>✅ Built-in expiration through shared key encryption</li>
+                        <li>✅ Secure shared key-based validation</li>
+                        <li>✅ Better scalability across multiple servers</li>
+                        <li>✅ Single API call for both token and image</li>
+                        <li>✅ Consistent encryption across server instances</li>
+                        <li>🔒 Enterprise-grade security with shared keys</li>
+                    </ul>
+                </div>
+
+                <div class="mt-3">
+                    <h6>Key Differences from Regular Stateless:</h6>
+                    <ul class="small text-muted">
+                        <li>Uses a pre-configured shared key for token encryption</li>
+                        <li>Ideal for enterprise deployments with multiple server instances</li>
+                        <li>Provides consistent token validation across all servers</li>
+                        <li>Longer token expiration time (10 minutes vs 5 minutes)</li>
+                        <li>Enhanced security features with custom styling options</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function refreshCaptcha() {
+        try {
+            const response = await fetch('/get-shared-key-stateless-captcha');
+            const data = await response.json();
+            
+            // Set the token for validation
+            document.getElementById('captcha-token').value = data.token;
+            
+            // Set the image source using base64 data
+            document.getElementById('captcha-image').src = `data:image/png;base64,${data.imageBase64}`;
+            
+            // Clear the input
+            document.getElementById('CaptchaCode').value = '';
+        } catch (error) {
+            console.error('Error refreshing captcha:', error);
+            alert('Failed to load captcha. Please try again.');
+        }
+    }
+
+    // Initialize captcha on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        refreshCaptcha();
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

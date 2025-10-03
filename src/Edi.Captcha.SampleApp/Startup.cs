@@ -24,8 +24,8 @@ public class Startup(IConfiguration configuration)
 
         services.AddMvc();
 
-        var magic1 = Convert.ToBase64String(SHA256.Create().ComputeHash(BitConverter.GetBytes(0x7DB14)))[21..25];
-        var magic2 = Convert.ToBase64String(SHA256.Create().ComputeHash(BitConverter.GetBytes(0x78E10)))[13..17];
+        var magic1 = Convert.ToBase64String(SHA256.HashData(BitConverter.GetBytes(0x7DB14)))[21..25];
+        var magic2 = Convert.ToBase64String(SHA256.HashData(BitConverter.GetBytes(0x78E10)))[13..17];
 
         //services.AddSessionBasedCaptcha();
         services.AddSessionBasedCaptcha(option =>
@@ -46,6 +46,25 @@ public class Startup(IConfiguration configuration)
             options.CodeLength = 4;
             options.TokenExpiration = TimeSpan.FromMinutes(5);
         });
+
+        services.AddSharedKeyStatelessCaptcha(options =>
+        {
+            // Generate this key once and store it securely (Azure Key Vault, etc.)
+            options.SharedKey = Configuration["CaptchaSharedKey"]; // Base64 encoded 256-bit key
+            options.FontStyle = FontStyle.Bold;
+            options.DrawLines = true;
+            options.TokenExpiration = TimeSpan.FromMinutes(10);
+        });
+
+
+        // Helper method to generate a new shared key (run once)
+        // public static string GenerateSharedKey()
+        // {
+        //     using var rng = RandomNumberGenerator.Create();
+        //     var keyBytes = new byte[32]; // 256 bits
+        //     rng.GetBytes(keyBytes);
+        //     return Convert.ToBase64String(keyBytes);
+        // }
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
