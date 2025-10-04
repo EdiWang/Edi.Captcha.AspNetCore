@@ -2,7 +2,7 @@
 
 namespace Edi.Captcha.SampleApp.Models;
 
-public class SessionCaptchaModel
+public class SessionCaptchaModel : ICaptchable
 {
     [Required]
     [StringLength(4)]

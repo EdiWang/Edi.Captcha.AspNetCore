@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Edi.Captcha.SampleApp.Models;
 
-public class StatelessCaptchaModel
+public class StatelessCaptchaModel : ICaptchableWithToken
 {
     [Required]
     [StringLength(4)]

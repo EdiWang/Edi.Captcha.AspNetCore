@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Edi.Captcha.SampleApp.Models;
 
-public class SharedKeyCaptchaModel
+public class SharedKeyCaptchaModel : ICaptchableWithToken
 {
     [Required]
     [StringLength(4)]
