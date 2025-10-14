@@ -79,7 +79,7 @@ public class Startup(IConfiguration configuration)
         }
 
         app.UseStaticFiles();
-        app.UseSession().UseCaptchaImage(options =>
+        app.UseSession().UseSessionCaptcha(options =>
         {
             options.RequestPath = "/captcha-image";
             options.ImageHeight = 36;

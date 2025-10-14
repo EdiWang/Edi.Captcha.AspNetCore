@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Edi.Captcha;
 
-public class CaptchaImageMiddleware(RequestDelegate next)
+public class SessionCaptchaImageMiddleware(RequestDelegate next)
 {
-    public static CaptchaImageMiddlewareOptions Options { get; set; } = new();
+    public static SessionCaptchaImageMiddlewareOptions Options { get; set; } = new();
 
     public async Task Invoke(HttpContext context, ISessionBasedCaptcha captcha)
     {
@@ -41,14 +41,14 @@ public class CaptchaImageMiddleware(RequestDelegate next)
 
 public static class CaptchaImageMiddlewareOptionsExtensions
 {
-    public static IApplicationBuilder UseCaptchaImage(this IApplicationBuilder app, Action<CaptchaImageMiddlewareOptions> options)
+    public static IApplicationBuilder UseSessionCaptcha(this IApplicationBuilder app, Action<SessionCaptchaImageMiddlewareOptions> options)
     {
-        options(CaptchaImageMiddleware.Options);
-        return app.UseMiddleware<CaptchaImageMiddleware>();
+        options(SessionCaptchaImageMiddleware.Options);
+        return app.UseMiddleware<SessionCaptchaImageMiddleware>();
     }
 }
 
-public class CaptchaImageMiddlewareOptions
+public class SessionCaptchaImageMiddlewareOptions
 {
     public PathString RequestPath { get; set; }
 

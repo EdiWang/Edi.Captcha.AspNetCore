@@ -78,7 +78,7 @@ public IActionResult GetCaptchaImage()
 #### Using Middleware
 
 ```csharp
-app.UseSession().UseCaptchaImage(options =>
+app.UseSession().UseSessionCaptcha(options =>
 {
     options.RequestPath = "/captcha-image";
     options.ImageHeight = 36;
