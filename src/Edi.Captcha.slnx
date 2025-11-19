@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../.gitattributes" />
+    <File Path="../.github/workflows/dotnet.yml" />
+    <File Path="../.gitignore" />
+    <File Path="../LICENSE" />
+    <File Path="../README.md" />
+  </Folder>
+  <Project Path="Edi.Captcha.SampleApp/Edi.Captcha.SampleApp.csproj" />
+  <Project Path="Edi.Captcha.Tests/Edi.Captcha.Tests.csproj" />
+  <Project Path="Edi.Captcha/Edi.Captcha.csproj" />
+</Solution>
