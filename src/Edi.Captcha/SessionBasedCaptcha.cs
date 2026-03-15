@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SixLabors.Fonts;
 using System;
 using System.IO;
 using System.Linq;
@@ -10,8 +9,7 @@ namespace Edi.Captcha;
 public class SessionBasedCaptchaOptions
 {
     public string SessionName { get; set; }
-    public FontStyle FontStyle { get; set; } = FontStyle.Regular;
-    public string FontName { get; set; }
+    public CaptchaFontStyle FontStyle { get; set; } = CaptchaFontStyle.Regular;
     public bool DrawLines { get; set; } = true;
     public string[] BlockedCodes { get; set; } = [];
 }
@@ -32,7 +30,7 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
             captchaCode = GenerateCaptchaCode();
         }
 
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle, Options.DrawLines);
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontStyle, Options.DrawLines);
         httpSession.SetString(sessionKeyName ?? Options.SessionName, result.CaptchaCode);
         return result.CaptchaByteData;
     }
@@ -47,7 +45,7 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
             captchaCode = GenerateCaptchaCode();
         }
 
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontName, Options.FontStyle, Options.DrawLines);
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, Options.FontStyle, Options.DrawLines);
         httpSession.SetString(sessionKeyName ?? Options.SessionName, result.CaptchaCode);
         Stream s = new MemoryStream(result.CaptchaByteData);
         return new(s, "image/png");

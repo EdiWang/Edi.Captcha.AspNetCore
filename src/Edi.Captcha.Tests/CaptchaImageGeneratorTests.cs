@@ -1,7 +1,4 @@
 using NUnit.Framework;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Threading.Tasks;
 
@@ -10,7 +7,6 @@ namespace Edi.Captcha.Tests;
 [TestFixture]
 public class CaptchaImageGeneratorTests
 {
-    private const string TestFontName = "Arial";
     private const string TestCaptchaCode = "ABC123";
 
     [Test]
@@ -22,7 +18,7 @@ public class CaptchaImageGeneratorTests
         const string captchaCode = "TEST123";
 
         // Act
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -41,7 +37,7 @@ public class CaptchaImageGeneratorTests
         const int height = 1;
 
         // Act
-        var result = CaptchaImageGenerator.GetImage(width, height, TestCaptchaCode, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(width, height, TestCaptchaCode);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -57,7 +53,7 @@ public class CaptchaImageGeneratorTests
         const int height = 500;
 
         // Act
-        var result = CaptchaImageGenerator.GetImage(width, height, TestCaptchaCode, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(width, height, TestCaptchaCode);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -69,12 +65,12 @@ public class CaptchaImageGeneratorTests
     public void GetImage_WithDifferentFontStyles_ReturnsValidResults()
     {
         // Arrange
-        var fontStyles = new[] { FontStyle.Regular, FontStyle.Bold, FontStyle.Italic };
+        var fontStyles = new[] { CaptchaFontStyle.Regular, CaptchaFontStyle.Bold, CaptchaFontStyle.Italic };
 
         foreach (var fontStyle in fontStyles)
         {
             // Act
-            var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName, fontStyle);
+            var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, fontStyle);
 
             // Assert
             Assert.That(result, Is.Not.Null, $"Failed for font style: {fontStyle}");
@@ -87,7 +83,7 @@ public class CaptchaImageGeneratorTests
     public void GetImage_WithDrawLinesTrue_ReturnsValidResult()
     {
         // Act
-        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName, FontStyle.Regular, true);
+        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, CaptchaFontStyle.Regular, true);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -99,7 +95,7 @@ public class CaptchaImageGeneratorTests
     public void GetImage_WithDrawLinesFalse_ReturnsValidResult()
     {
         // Act
-        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName, FontStyle.Regular, false);
+        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, CaptchaFontStyle.Regular, false);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -114,7 +110,7 @@ public class CaptchaImageGeneratorTests
         const string singleChar = "A";
 
         // Act
-        var result = CaptchaImageGenerator.GetImage(100, 50, singleChar, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(100, 50, singleChar);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -130,7 +126,7 @@ public class CaptchaImageGeneratorTests
         const string longCode = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
 
         // Act
-        var result = CaptchaImageGenerator.GetImage(800, 100, longCode, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(800, 100, longCode);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -146,7 +142,7 @@ public class CaptchaImageGeneratorTests
         const string specialChars = "!@#$%^&*()";
 
         // Act
-        var result = CaptchaImageGenerator.GetImage(300, 100, specialChars, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(300, 100, specialChars);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -162,7 +158,7 @@ public class CaptchaImageGeneratorTests
         const string numbers = "1234567890";
 
         // Act
-        var result = CaptchaImageGenerator.GetImage(300, 100, numbers, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(300, 100, numbers);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -175,23 +171,31 @@ public class CaptchaImageGeneratorTests
     public void GetImage_GeneratesValidPngImage()
     {
         // Act
-        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName);
+        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode);
 
         // Assert
         Assert.That(result.CaptchaByteData, Is.Not.Null);
 
-        // Verify it's a valid PNG by loading it
-        using var image = Image.Load<Rgba32>(result.CaptchaByteData);
-        Assert.That(image.Width, Is.EqualTo(200));
-        Assert.That(image.Height, Is.EqualTo(100));
+        // Verify it's a valid PNG by checking header and dimensions
+        Assert.That(result.CaptchaByteData.Length, Is.GreaterThan(24));
+        // PNG signature: 137 80 78 71 13 10 26 10
+        Assert.That(result.CaptchaByteData[0], Is.EqualTo(0x89));
+        Assert.That(result.CaptchaByteData[1], Is.EqualTo(0x50)); // 'P'
+        Assert.That(result.CaptchaByteData[2], Is.EqualTo(0x4E)); // 'N'
+        Assert.That(result.CaptchaByteData[3], Is.EqualTo(0x47)); // 'G'
+        // Read width and height from IHDR chunk (bytes 16-23, big-endian)
+        var pngWidth = (result.CaptchaByteData[16] << 24) | (result.CaptchaByteData[17] << 16) | (result.CaptchaByteData[18] << 8) | result.CaptchaByteData[19];
+        var pngHeight = (result.CaptchaByteData[20] << 24) | (result.CaptchaByteData[21] << 16) | (result.CaptchaByteData[22] << 8) | result.CaptchaByteData[23];
+        Assert.That(pngWidth, Is.EqualTo(200));
+        Assert.That(pngHeight, Is.EqualTo(100));
     }
 
     [Test]
     public void GetImage_ConsecutiveCalls_GenerateDifferentImages()
     {
         // Act
-        var result1 = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName);
-        var result2 = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName);
+        var result1 = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode);
+        var result2 = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode);
 
         // Assert
         Assert.That(result1.CaptchaByteData, Is.Not.EqualTo(result2.CaptchaByteData),
@@ -207,12 +211,13 @@ public class CaptchaImageGeneratorTests
         foreach (var (width, height) in sizes)
         {
             // Act
-            var result = CaptchaImageGenerator.GetImage(width, height, TestCaptchaCode, TestFontName);
+            var result = CaptchaImageGenerator.GetImage(width, height, TestCaptchaCode);
 
-            // Assert
-            using var image = Image.Load<Rgba32>(result.CaptchaByteData);
-            Assert.That(image.Width, Is.EqualTo(width), $"Width mismatch for size {width}x{height}");
-            Assert.That(image.Height, Is.EqualTo(height), $"Height mismatch for size {width}x{height}");
+            // Assert - Parse PNG IHDR to verify dimensions
+            var pngWidth = (result.CaptchaByteData[16] << 24) | (result.CaptchaByteData[17] << 16) | (result.CaptchaByteData[18] << 8) | result.CaptchaByteData[19];
+            var pngHeight = (result.CaptchaByteData[20] << 24) | (result.CaptchaByteData[21] << 16) | (result.CaptchaByteData[22] << 8) | result.CaptchaByteData[23];
+            Assert.That(pngWidth, Is.EqualTo(width), $"Width mismatch for size {width}x{height}");
+            Assert.That(pngHeight, Is.EqualTo(height), $"Height mismatch for size {width}x{height}");
         }
     }
 
@@ -223,7 +228,7 @@ public class CaptchaImageGeneratorTests
     {
         // Act & Assert
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            CaptchaImageGenerator.GetImage(0, 100, TestCaptchaCode, TestFontName));
+            CaptchaImageGenerator.GetImage(0, 100, TestCaptchaCode));
 
         Assert.That(ex.ParamName, Is.EqualTo("width"));
     }
@@ -233,7 +238,7 @@ public class CaptchaImageGeneratorTests
     {
         // Act & Assert
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            CaptchaImageGenerator.GetImage(-1, 100, TestCaptchaCode, TestFontName));
+            CaptchaImageGenerator.GetImage(-1, 100, TestCaptchaCode));
 
         Assert.That(ex.ParamName, Is.EqualTo("width"));
     }
@@ -243,7 +248,7 @@ public class CaptchaImageGeneratorTests
     {
         // Act & Assert
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            CaptchaImageGenerator.GetImage(100, 0, TestCaptchaCode, TestFontName));
+            CaptchaImageGenerator.GetImage(100, 0, TestCaptchaCode));
 
         Assert.That(ex.ParamName, Is.EqualTo("height"));
     }
@@ -253,7 +258,7 @@ public class CaptchaImageGeneratorTests
     {
         // Act & Assert
         var ex = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            CaptchaImageGenerator.GetImage(100, -1, TestCaptchaCode, TestFontName));
+            CaptchaImageGenerator.GetImage(100, -1, TestCaptchaCode));
 
         Assert.That(ex.ParamName, Is.EqualTo("height"));
     }
@@ -263,7 +268,7 @@ public class CaptchaImageGeneratorTests
     {
         // Act & Assert
         var ex = Assert.Throws<ArgumentException>(() =>
-            CaptchaImageGenerator.GetImage(100, 100, "", TestFontName));
+            CaptchaImageGenerator.GetImage(100, 100, ""));
 
         Assert.That(ex.ParamName, Is.EqualTo("captchaCode"));
     }
@@ -273,29 +278,9 @@ public class CaptchaImageGeneratorTests
     {
         // Act & Assert
         var ex = Assert.Throws<ArgumentException>(() =>
-            CaptchaImageGenerator.GetImage(100, 100, "   ", TestFontName));
+            CaptchaImageGenerator.GetImage(100, 100, "   "));
 
         Assert.That(ex.ParamName, Is.EqualTo("captchaCode"));
-    }
-
-    [Test]
-    public void GetImage_WithEmptyFontName_ThrowsArgumentException()
-    {
-        // Act & Assert
-        var ex = Assert.Throws<ArgumentException>(() =>
-            CaptchaImageGenerator.GetImage(100, 100, TestCaptchaCode, ""));
-
-        Assert.That(ex.ParamName, Is.EqualTo("fontName"));
-    }
-
-    [Test]
-    public void GetImage_WithWhitespaceFontName_ThrowsArgumentException()
-    {
-        // Act & Assert
-        var ex = Assert.Throws<ArgumentException>(() =>
-            CaptchaImageGenerator.GetImage(100, 100, TestCaptchaCode, "   "));
-
-        Assert.That(ex.ParamName, Is.EqualTo("fontName"));
     }
 
     #endregion
@@ -308,7 +293,7 @@ public class CaptchaImageGeneratorTests
         // Act & Assert - Should not throw, even if image quality is poor
         Assert.DoesNotThrow(() =>
         {
-            var result = CaptchaImageGenerator.GetImage(10, 10, "A", TestFontName);
+            var result = CaptchaImageGenerator.GetImage(10, 10, "A");
             Assert.That(result, Is.Not.Null);
             Assert.That(result.CaptchaByteData, Is.Not.Null);
         });
@@ -320,14 +305,14 @@ public class CaptchaImageGeneratorTests
         // Test very wide image
         Assert.DoesNotThrow(() =>
         {
-            var result = CaptchaImageGenerator.GetImage(1000, 10, TestCaptchaCode, TestFontName);
+            var result = CaptchaImageGenerator.GetImage(1000, 10, TestCaptchaCode);
             Assert.That(result, Is.Not.Null);
         });
 
         // Test very tall image
         Assert.DoesNotThrow(() =>
         {
-            var result = CaptchaImageGenerator.GetImage(10, 1000, TestCaptchaCode, TestFontName);
+            var result = CaptchaImageGenerator.GetImage(10, 1000, TestCaptchaCode);
             Assert.That(result, Is.Not.Null);
         });
     }
@@ -341,7 +326,7 @@ public class CaptchaImageGeneratorTests
         // Act & Assert - Should handle gracefully even if font doesn't support all characters
         Assert.DoesNotThrow(() =>
         {
-            var result = CaptchaImageGenerator.GetImage(300, 100, unicodeText, TestFontName);
+            var result = CaptchaImageGenerator.GetImage(300, 100, unicodeText);
             Assert.That(result, Is.Not.Null);
             Assert.That(result.CaptchaCode, Is.EqualTo(unicodeText));
         });
@@ -361,7 +346,7 @@ public class CaptchaImageGeneratorTests
             int index = i;
             tasks[i] = Task.Run(() =>
             {
-                results[index] = CaptchaImageGenerator.GetImage(200, 100, $"TEST{index}", TestFontName);
+                results[index] = CaptchaImageGenerator.GetImage(200, 100, $"TEST{index}");
             });
         }
 
@@ -400,7 +385,7 @@ public class CaptchaImageGeneratorTests
         // Act
         for (int i = 0; i < 100; i++)
         {
-            CaptchaImageGenerator.GetImage(200, 100, $"TEST{i}", TestFontName);
+            CaptchaImageGenerator.GetImage(200, 100, $"TEST{i}");
         }
 
         stopwatch.Stop();
@@ -419,7 +404,7 @@ public class CaptchaImageGeneratorTests
         // Act - Generate many captchas
         for (int i = 0; i < 1000; i++)
         {
-            var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName);
+            var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode);
             // Intentionally not keeping references to allow GC
         }
 

@@ -1,4 +1,4 @@
-﻿@using SixLabors.Fonts
+﻿@using Edi.Captcha
 @model SessionCaptchaModel
 @{
     ViewData["Title"] = "Session-based Captcha Example";
@@ -6,10 +6,6 @@
 
 @section scripts{
     <partial name="_ValidationScriptsPartial" />
-}
-
-@{
-    var fonts = SystemFonts.Collection.Families;
 }
 
 <div class="text-center">
@@ -64,35 +60,6 @@
                         <li>⚠️ May not work well in clustered environments</li>
                         <li>⚠️ Dependent on server-side session storage</li>
                     </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header">
-                <h5>Available System Fonts</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    @{
-                        var fontList = fonts.ToList();
-                        var itemsPerColumn = (int)Math.Ceiling(fontList.Count / 3.0);
-                    }
-                    @for (int col = 0; col < 3; col++)
-                    {
-                        <div class="col-md-4">
-                            <ul class="list-unstyled small">
-                                @for (int i = col * itemsPerColumn; i < Math.Min((col + 1) * itemsPerColumn, fontList.Count); i++)
-                                {
-                                    <li class="mb-1">@fontList[i].Name</li>
-                                }
-                            </ul>
-                        </div>
-                    }
                 </div>
             </div>
         </div>
