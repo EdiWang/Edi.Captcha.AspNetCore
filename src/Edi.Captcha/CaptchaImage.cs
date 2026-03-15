@@ -148,7 +148,27 @@ internal sealed class CaptchaImage : IDisposable
     public int MeasureCharWidth(char c, int scale, CaptchaFontStyle fontStyle)
     {
         var width = CaptchaFont.GlyphWidth * scale;
-        if (fontStyle == CaptchaFontStyle.Bold) width += scale;
+        if (fontStyle == CaptchaFontStyle.Bold)
+        {
+            width += scale;
+        }
+
+        // Account for italic shear: horizontal offset proportional to glyph height.
+        // This mirrors the shear used in DrawCharacter (srcX -= srcY * shear).
+        float shear = 0f;
+        if (fontStyle == CaptchaFontStyle.Italic)
+        {
+            // Use the same shear factor as in DrawCharacter for italic rendering.
+            shear = 0.3f;
+        }
+
+        if (shear != 0f)
+        {
+            // Maximum additional width is shear * glyph height * scale.
+            var italicExtra = (int)Math.Ceiling(Math.Abs(shear) * CaptchaFont.GlyphHeight * scale);
+            width += italicExtra;
+        }
+
         return width;
     }
 
