@@ -49,16 +49,21 @@ public static class CaptchaImageGenerator
         int width,
         int height)
     {
-        var availableWidth = width - (TextPadding * 2);
         var availableHeight = height - (TextPadding * 2);
 
-        // Calculate scale factor based on available space
-        var charSlotWidth = (float)availableWidth / captchaCode.Length;
-        var scaleByWidth = charSlotWidth / CaptchaFont.GlyphWidth;
-        var scaleByHeight = availableHeight * 0.75f / CaptchaFont.GlyphHeight;
-        var scale = Math.Max(1, (int)Math.Min(scaleByWidth, scaleByHeight));
+        // Target: text block occupies ~70% of image width
+        var targetTextWidth = width * 0.7f;
+        var totalGaps = Math.Max(0, captchaCode.Length - 1);
+        var avgGapWidth = 2.5f; // average of Rand.Next(1, 4)
+        var availableForChars = targetTextWidth - totalGaps * avgGapWidth;
+        var scaleByWidth = availableForChars / (captchaCode.Length * CaptchaFont.GlyphWidth);
+        var scaleByHeight = (float)availableHeight / CaptchaFont.GlyphHeight;
+        var scale = Math.Max(1, (int)Math.Round(Math.Min(scaleByWidth, scaleByHeight)));
 
-        var currentX = TextPadding;
+        // Center the text block horizontally
+        var charWidth = CaptchaFont.GlyphWidth * scale;
+        var estimatedTotalWidth = captchaCode.Length * charWidth + (int)(totalGaps * avgGapWidth);
+        var currentX = Math.Max(TextPadding, (width - estimatedTotalWidth) / 2);
 
         for (var i = 0; i < captchaCode.Length; i++)
         {
