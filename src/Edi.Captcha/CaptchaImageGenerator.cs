@@ -72,7 +72,7 @@ public static class CaptchaImageGenerator
             var charW = img.MeasureCharWidth(character, scale, fontStyle);
             var charH = img.MeasureCharHeight(scale);
 
-            var maxX = Math.Max(currentX, width - TextPadding - charW);
+            var maxX = Math.Max(TextPadding, width - TextPadding - charW);
             var maxY = Math.Max(TextPadding, height - TextPadding - charH);
 
             var x = Math.Min(currentX + Rand.Next(0, 3), maxX);
