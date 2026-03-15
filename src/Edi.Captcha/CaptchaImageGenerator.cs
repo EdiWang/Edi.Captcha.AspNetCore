@@ -58,7 +58,7 @@ public static class CaptchaImageGenerator
         var availableForChars = targetTextWidth - totalGaps * avgGapWidth;
         var scaleByWidth = availableForChars / (captchaCode.Length * CaptchaFont.GlyphWidth);
         var scaleByHeight = (float)availableHeight / CaptchaFont.GlyphHeight;
-        var scale = Math.Max(1, (int)Math.Round(Math.Min(scaleByWidth, scaleByHeight)));
+        var scale = Math.Max(1, (int)Math.Floor(Math.Min(scaleByWidth, scaleByHeight)));
 
         // Center the text block horizontally
         var charWidth = CaptchaFont.GlyphWidth * scale;
