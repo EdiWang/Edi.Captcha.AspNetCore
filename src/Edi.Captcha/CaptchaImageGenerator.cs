@@ -14,14 +14,12 @@ public static class CaptchaImageGenerator
         int width,
         int height,
         string captchaCode,
-        string fontName,
         CaptchaFontStyle fontStyle = CaptchaFontStyle.Regular,
         bool drawLines = true)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
         ArgumentException.ThrowIfNullOrWhiteSpace(captchaCode);
-        ArgumentException.ThrowIfNullOrWhiteSpace(fontName);
 
         using var img = new CaptchaImage(width, height);
 

@@ -11,7 +11,6 @@ public static class CaptchaServiceCollectionExtensions
         {
             Letters = "2346789ABCDGHKMNPRUVWXYZ",
             SessionName = "CaptchaCode",
-            FontName = "Embedded",
             CodeLength = 4
         };
 
@@ -27,7 +26,6 @@ public static class CaptchaServiceCollectionExtensions
         var option = new StatelessLetterCaptchaOptions
         {
             Letters = "2346789ABCDGHKMNPRUVWXYZ",
-            FontName = "Embedded",
             CodeLength = 4,
             TokenExpiration = TimeSpan.FromMinutes(5)
         };
@@ -43,7 +41,6 @@ public static class CaptchaServiceCollectionExtensions
         var option = new SharedKeyStatelessLetterCaptchaOptions
         {
             Letters = "2346789ABCDGHKMNPRUVWXYZ",
-            FontName = "Embedded",
             CodeLength = 4,
             TokenExpiration = TimeSpan.FromMinutes(5)
         };

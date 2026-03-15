@@ -9,7 +9,6 @@ namespace Edi.Captcha;
 public class SharedKeyStatelessCaptchaOptions
 {
     public CaptchaFontStyle FontStyle { get; set; } = CaptchaFontStyle.Regular;
-    public string FontName { get; set; }
     public bool DrawLines { get; set; } = true;
     public string[] BlockedCodes { get; set; } = [];
     public TimeSpan TokenExpiration { get; set; } = TimeSpan.FromMinutes(5);
@@ -54,7 +53,7 @@ public abstract class SharedKeyStatelessCaptcha : IStatelessCaptcha
             captchaCode = GenerateCaptchaCode();
         }
 
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, _options.FontName, _options.FontStyle, _options.DrawLines);
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, _options.FontStyle, _options.DrawLines);
 
         var tokenData = new CaptchaTokenData
         {

@@ -8,7 +8,6 @@ namespace Edi.Captcha;
 public class StatelessCaptchaOptions
 {
     public CaptchaFontStyle FontStyle { get; set; } = CaptchaFontStyle.Regular;
-    public string FontName { get; set; }
     public bool DrawLines { get; set; } = true;
     public string[] BlockedCodes { get; set; } = [];
     public TimeSpan TokenExpiration { get; set; } = TimeSpan.FromMinutes(5);
@@ -28,7 +27,7 @@ public abstract class StatelessCaptcha(IDataProtectionProvider dataProtectionPro
             captchaCode = GenerateCaptchaCode();
         }
 
-        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, options.FontName, options.FontStyle, options.DrawLines);
+        var result = CaptchaImageGenerator.GetImage(width, height, captchaCode, options.FontStyle, options.DrawLines);
 
         var tokenData = new CaptchaTokenData
         {
