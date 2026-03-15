@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.DataProtection;
-using SixLabors.Fonts;
 using System;
 using System.Linq;
 using System.Text.Json;
@@ -8,7 +7,7 @@ namespace Edi.Captcha;
 
 public class StatelessCaptchaOptions
 {
-    public FontStyle FontStyle { get; set; } = FontStyle.Regular;
+    public CaptchaFontStyle FontStyle { get; set; } = CaptchaFontStyle.Regular;
     public string FontName { get; set; }
     public bool DrawLines { get; set; } = true;
     public string[] BlockedCodes { get; set; } = [];

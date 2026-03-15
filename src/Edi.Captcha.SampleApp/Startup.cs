@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SixLabors.Fonts;
 using System;
 using System.Security.Cryptography;
 
@@ -32,8 +31,7 @@ public class Startup(IConfiguration configuration)
         {
             option.Letters = "2346789ABCDEFGHJKLMNPRTUVWXYZ";
             option.SessionName = "CaptchaCode";
-            option.FontStyle = FontStyle.Bold;
-            //option.FontName = "Arial";
+            option.FontStyle = CaptchaFontStyle.Bold;
             option.CodeLength = 4;
             //option.DrawLines = false;
             option.BlockedCodes = [magic1, magic2];
@@ -51,7 +49,7 @@ public class Startup(IConfiguration configuration)
         {
             // Generate this key once and store it securely (Azure Key Vault, etc.)
             options.SharedKey = Configuration["CaptchaSharedKey"]; // Base64 encoded 256-bit key
-            options.FontStyle = FontStyle.Bold;
+            options.FontStyle = CaptchaFontStyle.Bold;
             options.DrawLines = true;
             options.TokenExpiration = TimeSpan.FromMinutes(10);
         });

@@ -1,7 +1,4 @@
 using NUnit.Framework;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Threading.Tasks;
 
@@ -10,7 +7,7 @@ namespace Edi.Captcha.Tests;
 [TestFixture]
 public class CaptchaImageGeneratorTests
 {
-    private const string TestFontName = "Arial";
+    private const string TestFontName = "Embedded";
     private const string TestCaptchaCode = "ABC123";
 
     [Test]
@@ -69,7 +66,7 @@ public class CaptchaImageGeneratorTests
     public void GetImage_WithDifferentFontStyles_ReturnsValidResults()
     {
         // Arrange
-        var fontStyles = new[] { FontStyle.Regular, FontStyle.Bold, FontStyle.Italic };
+        var fontStyles = new[] { CaptchaFontStyle.Regular, CaptchaFontStyle.Bold, CaptchaFontStyle.Italic };
 
         foreach (var fontStyle in fontStyles)
         {
@@ -87,7 +84,7 @@ public class CaptchaImageGeneratorTests
     public void GetImage_WithDrawLinesTrue_ReturnsValidResult()
     {
         // Act
-        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName, FontStyle.Regular, true);
+        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName, CaptchaFontStyle.Regular, true);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -99,7 +96,7 @@ public class CaptchaImageGeneratorTests
     public void GetImage_WithDrawLinesFalse_ReturnsValidResult()
     {
         // Act
-        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName, FontStyle.Regular, false);
+        var result = CaptchaImageGenerator.GetImage(200, 100, TestCaptchaCode, TestFontName, CaptchaFontStyle.Regular, false);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -180,10 +177,18 @@ public class CaptchaImageGeneratorTests
         // Assert
         Assert.That(result.CaptchaByteData, Is.Not.Null);
 
-        // Verify it's a valid PNG by loading it
-        using var image = Image.Load<Rgba32>(result.CaptchaByteData);
-        Assert.That(image.Width, Is.EqualTo(200));
-        Assert.That(image.Height, Is.EqualTo(100));
+        // Verify it's a valid PNG by checking header and dimensions
+        Assert.That(result.CaptchaByteData.Length, Is.GreaterThan(24));
+        // PNG signature: 137 80 78 71 13 10 26 10
+        Assert.That(result.CaptchaByteData[0], Is.EqualTo(0x89));
+        Assert.That(result.CaptchaByteData[1], Is.EqualTo(0x50)); // 'P'
+        Assert.That(result.CaptchaByteData[2], Is.EqualTo(0x4E)); // 'N'
+        Assert.That(result.CaptchaByteData[3], Is.EqualTo(0x47)); // 'G'
+        // Read width and height from IHDR chunk (bytes 16-23, big-endian)
+        var pngWidth = (result.CaptchaByteData[16] << 24) | (result.CaptchaByteData[17] << 16) | (result.CaptchaByteData[18] << 8) | result.CaptchaByteData[19];
+        var pngHeight = (result.CaptchaByteData[20] << 24) | (result.CaptchaByteData[21] << 16) | (result.CaptchaByteData[22] << 8) | result.CaptchaByteData[23];
+        Assert.That(pngWidth, Is.EqualTo(200));
+        Assert.That(pngHeight, Is.EqualTo(100));
     }
 
     [Test]
@@ -209,10 +214,11 @@ public class CaptchaImageGeneratorTests
             // Act
             var result = CaptchaImageGenerator.GetImage(width, height, TestCaptchaCode, TestFontName);
 
-            // Assert
-            using var image = Image.Load<Rgba32>(result.CaptchaByteData);
-            Assert.That(image.Width, Is.EqualTo(width), $"Width mismatch for size {width}x{height}");
-            Assert.That(image.Height, Is.EqualTo(height), $"Height mismatch for size {width}x{height}");
+            // Assert - Parse PNG IHDR to verify dimensions
+            var pngWidth = (result.CaptchaByteData[16] << 24) | (result.CaptchaByteData[17] << 16) | (result.CaptchaByteData[18] << 8) | result.CaptchaByteData[19];
+            var pngHeight = (result.CaptchaByteData[20] << 24) | (result.CaptchaByteData[21] << 16) | (result.CaptchaByteData[22] << 8) | result.CaptchaByteData[23];
+            Assert.That(pngWidth, Is.EqualTo(width), $"Width mismatch for size {width}x{height}");
+            Assert.That(pngHeight, Is.EqualTo(height), $"Height mismatch for size {width}x{height}");
         }
     }
 

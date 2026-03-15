@@ -1,4 +1,3 @@
-using SixLabors.Fonts;
 using System;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,7 @@ namespace Edi.Captcha;
 
 public class SharedKeyStatelessCaptchaOptions
 {
-    public FontStyle FontStyle { get; set; } = FontStyle.Regular;
+    public CaptchaFontStyle FontStyle { get; set; } = CaptchaFontStyle.Regular;
     public string FontName { get; set; }
     public bool DrawLines { get; set; } = true;
     public string[] BlockedCodes { get; set; } = [];

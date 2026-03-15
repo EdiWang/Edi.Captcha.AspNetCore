@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SixLabors.Fonts;
 using System;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Edi.Captcha;
 
@@ -10,13 +7,11 @@ public static class CaptchaServiceCollectionExtensions
 {
     public static void AddSessionBasedCaptcha(this IServiceCollection services, Action<BasicLetterCaptchaOptions> options = null)
     {
-        string fontName = GetDefaultFontName();
-
         var option = new BasicLetterCaptchaOptions
         {
             Letters = "2346789ABCDGHKMNPRUVWXYZ",
             SessionName = "CaptchaCode",
-            FontName = fontName,
+            FontName = "Embedded",
             CodeLength = 4
         };
 
@@ -29,12 +24,10 @@ public static class CaptchaServiceCollectionExtensions
     {
         services.AddDataProtection();
 
-        string fontName = GetDefaultFontName();
-
         var option = new StatelessLetterCaptchaOptions
         {
             Letters = "2346789ABCDGHKMNPRUVWXYZ",
-            FontName = fontName,
+            FontName = "Embedded",
             CodeLength = 4,
             TokenExpiration = TimeSpan.FromMinutes(5)
         };
@@ -47,12 +40,10 @@ public static class CaptchaServiceCollectionExtensions
 
     public static IServiceCollection AddSharedKeyStatelessCaptcha(this IServiceCollection services, Action<SharedKeyStatelessLetterCaptchaOptions> options = null)
     {
-        string fontName = GetDefaultFontName();
-
         var option = new SharedKeyStatelessLetterCaptchaOptions
         {
             Letters = "2346789ABCDGHKMNPRUVWXYZ",
-            FontName = fontName,
+            FontName = "Embedded",
             CodeLength = 4,
             TokenExpiration = TimeSpan.FromMinutes(5)
         };
@@ -63,38 +54,5 @@ public static class CaptchaServiceCollectionExtensions
         services.AddTransient<IStatelessCaptcha, SharedKeyStatelessLetterCaptcha>();
 
         return services;
-    }
-
-    private static string GetDefaultFontName()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            return "Arial";
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            return GetAvailableFontForLinux();
-        }
-
-        return "Arial";
-    }
-
-    private static string GetAvailableFontForLinux()
-    {
-        var fontList = new[]
-        {
-            "Arial",
-            "Verdana",
-            "Helvetica",
-            "Tahoma",
-            "Terminal",
-            "Open Sans",
-            "Monospace",
-            "Ubuntu Mono",
-            "DejaVu Sans",
-            "DejaVu Sans Mono"
-        };
-        return fontList.FirstOrDefault(fontName => SystemFonts.Collection.TryGet(fontName, out _));
     }
 }
