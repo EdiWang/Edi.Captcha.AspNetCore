@@ -44,6 +44,13 @@ public static class CaptchaImageMiddlewareOptionsExtensions
     public static IApplicationBuilder UseSessionCaptcha(this IApplicationBuilder app, Action<SessionCaptchaImageMiddlewareOptions> options)
     {
         options(SessionCaptchaImageMiddleware.Options);
+
+        if (!SessionCaptchaImageMiddleware.Options.RequestPath.HasValue ||
+            string.IsNullOrWhiteSpace(SessionCaptchaImageMiddleware.Options.RequestPath.Value))
+        {
+            throw new ArgumentException("RequestPath must be set in SessionCaptchaImageMiddlewareOptions.", nameof(options));
+        }
+
         return app.UseMiddleware<SessionCaptchaImageMiddleware>();
     }
 }
