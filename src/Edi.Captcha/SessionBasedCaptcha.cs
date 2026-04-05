@@ -16,6 +16,8 @@ public class SessionBasedCaptchaOptions
 
 public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
 {
+    private const int MaxBlockedCodeRetries = 100;
+
     public SessionBasedCaptchaOptions Options { get; set; }
 
     public abstract string GenerateCaptchaCode();
@@ -25,8 +27,11 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
         EnsureHttpSession(httpSession);
 
         var captchaCode = GenerateCaptchaCode();
+        var retries = 0;
         while (Options.BlockedCodes.Contains(captchaCode))
         {
+            if (++retries > MaxBlockedCodeRetries)
+                throw new InvalidOperationException($"Unable to generate a captcha code not in BlockedCodes after {MaxBlockedCodeRetries} attempts.");
             captchaCode = GenerateCaptchaCode();
         }
 
@@ -40,8 +45,11 @@ public abstract class SessionBasedCaptcha : ISessionBasedCaptcha
         EnsureHttpSession(httpSession);
 
         var captchaCode = GenerateCaptchaCode();
+        var retries = 0;
         while (Options.BlockedCodes.Contains(captchaCode))
         {
+            if (++retries > MaxBlockedCodeRetries)
+                throw new InvalidOperationException($"Unable to generate a captcha code not in BlockedCodes after {MaxBlockedCodeRetries} attempts.");
             captchaCode = GenerateCaptchaCode();
         }
 
