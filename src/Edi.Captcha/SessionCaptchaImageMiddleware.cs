@@ -5,16 +5,14 @@ using System.Threading.Tasks;
 
 namespace Edi.Captcha;
 
-public class SessionCaptchaImageMiddleware(RequestDelegate next)
+public class SessionCaptchaImageMiddleware(RequestDelegate next, SessionCaptchaImageMiddlewareOptions options)
 {
-    public static SessionCaptchaImageMiddlewareOptions Options { get; set; } = new();
-
     public async Task Invoke(HttpContext context, ISessionBasedCaptcha captcha)
     {
-        if (context.Request.Path == Options.RequestPath)
+        if (context.Request.Path == options.RequestPath)
         {
-            var w = Options.ImageWidth;
-            var h = Options.ImageHeight;
+            var w = options.ImageWidth;
+            var h = options.ImageHeight;
 
             // prevent crazy size
             if (w > 640) w = 640;
@@ -25,7 +23,7 @@ public class SessionCaptchaImageMiddleware(RequestDelegate next)
             context.Response.StatusCode = StatusCodes.Status200OK;
             context.Response.ContentType = "image/png";
 
-            if (Options.DisableCache)
+            if (options.DisableCache)
             {
                 context.Response.Headers.CacheControl = "no-cache,no-store";
             }
@@ -41,17 +39,18 @@ public class SessionCaptchaImageMiddleware(RequestDelegate next)
 
 public static class CaptchaImageMiddlewareOptionsExtensions
 {
-    public static IApplicationBuilder UseSessionCaptcha(this IApplicationBuilder app, Action<SessionCaptchaImageMiddlewareOptions> options)
+    public static IApplicationBuilder UseSessionCaptcha(this IApplicationBuilder app, Action<SessionCaptchaImageMiddlewareOptions> configure)
     {
-        options(SessionCaptchaImageMiddleware.Options);
+        var options = new SessionCaptchaImageMiddlewareOptions();
+        configure(options);
 
-        if (!SessionCaptchaImageMiddleware.Options.RequestPath.HasValue ||
-            string.IsNullOrWhiteSpace(SessionCaptchaImageMiddleware.Options.RequestPath.Value))
+        if (!options.RequestPath.HasValue ||
+            string.IsNullOrWhiteSpace(options.RequestPath.Value))
         {
-            throw new ArgumentException("RequestPath must be set in SessionCaptchaImageMiddlewareOptions.", nameof(options));
+            throw new ArgumentException("RequestPath must be set in SessionCaptchaImageMiddlewareOptions.", nameof(configure));
         }
 
-        return app.UseMiddleware<SessionCaptchaImageMiddleware>();
+        return app.UseMiddleware<SessionCaptchaImageMiddleware>(options);
     }
 }
 

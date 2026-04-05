@@ -44,17 +44,21 @@ public class CaptchaImageMiddlewareTests
         _mockResponse.Setup(x => x.Headers).Returns(_mockHeaders.Object);
         _mockResponse.Setup(x => x.Body).Returns(_responseBodyStream);
 
-        _middleware = new SessionCaptchaImageMiddleware(_mockNext.Object);
-
-        // Reset options to default state before each test
-        SessionCaptchaImageMiddleware.Options = new SessionCaptchaImageMiddlewareOptions
-        {
-            RequestPath = "/captcha-image",
-            ImageWidth = 100,
-            ImageHeight = 36,
-            DisableCache = true
-        };
+        _middleware = CreateMiddleware();
     }
+
+    private SessionCaptchaImageMiddleware CreateMiddleware(
+        string path = "/captcha-image",
+        int width = 100,
+        int height = 36,
+        bool disableCache = true)
+        => new(_mockNext.Object, new SessionCaptchaImageMiddlewareOptions
+        {
+            RequestPath = path,
+            ImageWidth = width,
+            ImageHeight = height,
+            DisableCache = disableCache
+        });
 
     [TearDown]
     public void TearDown()
@@ -105,14 +109,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithCustomRequestPath_WorksCorrectly()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.RequestPath = "/custom-captcha";
+        var middleware = CreateMiddleware(path: "/custom-captcha");
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/custom-captcha");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 100, 36, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 100, 36, null), Times.Once);
@@ -127,15 +131,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithCustomImageSize_UsesCorrectDimensions()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.ImageWidth = 200;
-        SessionCaptchaImageMiddleware.Options.ImageHeight = 80;
+        var middleware = CreateMiddleware(width: 200, height: 80);
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/captcha-image");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 200, 80, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 200, 80, null), Times.Once);
@@ -145,15 +148,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithWidthExceeding640_LimitsTo640()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.ImageWidth = 800;
-        SessionCaptchaImageMiddleware.Options.ImageHeight = 100;
+        var middleware = CreateMiddleware(width: 800, height: 100);
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/captcha-image");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 640, 100, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 640, 100, null), Times.Once);
@@ -163,15 +165,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithHeightExceeding480_LimitsTo480()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.ImageWidth = 200;
-        SessionCaptchaImageMiddleware.Options.ImageHeight = 600;
+        var middleware = CreateMiddleware(width: 200, height: 600);
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/captcha-image");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 200, 480, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 200, 480, null), Times.Once);
@@ -181,15 +182,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithBothDimensionsExceedingLimits_LimitsBoth()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.ImageWidth = 1000;
-        SessionCaptchaImageMiddleware.Options.ImageHeight = 600;
+        var middleware = CreateMiddleware(width: 1000, height: 600);
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/captcha-image");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 640, 480, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 640, 480, null), Times.Once);
@@ -199,15 +199,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithExactlyMaxDimensions_DoesNotLimit()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.ImageWidth = 640;
-        SessionCaptchaImageMiddleware.Options.ImageHeight = 480;
+        var middleware = CreateMiddleware(width: 640, height: 480);
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/captcha-image");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 640, 480, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 640, 480, null), Times.Once);
@@ -221,14 +220,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithDisableCacheTrue_SetsCacheControlHeaders()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.DisableCache = true;
+        var middleware = CreateMiddleware(disableCache: true);
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/captcha-image");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 100, 36, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockHeaders.VerifySet(x => x.CacheControl = "no-cache,no-store", Times.Once);
@@ -238,14 +237,14 @@ public class CaptchaImageMiddlewareTests
     public async Task Invoke_WithDisableCacheFalse_DoesNotSetCacheControlHeaders()
     {
         // Arrange
-        SessionCaptchaImageMiddleware.Options.DisableCache = false;
+        var middleware = CreateMiddleware(disableCache: false);
         var testImageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
         _mockRequest.Setup(x => x.Path).Returns("/captcha-image");
         _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 100, 36, null))
                    .Returns(testImageBytes);
 
         // Act
-        await _middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        await middleware.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
 
         // Assert
         _mockHeaders.VerifySet(x => x["Cache-Control"] = It.IsAny<StringValues>(), Times.Never);
@@ -482,33 +481,23 @@ public class CaptchaImageMiddlewareTests
     }
 
     [Test]
-    public void Options_StaticProperty_CanBeModified()
+    public async Task Options_EachInstance_HasIsolatedOptions()
     {
-        // Arrange
-        var originalOptions = SessionCaptchaImageMiddleware.Options;
+        // Two middleware instances with different options must not interfere.
+        var m1 = CreateMiddleware(path: "/captcha-a", width: 100, height: 36);
+        var m2 = CreateMiddleware(path: "/captcha-b", width: 200, height: 80);
 
-        try
-        {
-            // Act
-            SessionCaptchaImageMiddleware.Options = new SessionCaptchaImageMiddlewareOptions
-            {
-                RequestPath = "/test-captcha",
-                ImageWidth = 150,
-                ImageHeight = 75,
-                DisableCache = false
-            };
+        var bytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
 
-            // Assert
-            Assert.That(SessionCaptchaImageMiddleware.Options.RequestPath.Value, Is.EqualTo("/test-captcha"));
-            Assert.That(SessionCaptchaImageMiddleware.Options.ImageWidth, Is.EqualTo(150));
-            Assert.That(SessionCaptchaImageMiddleware.Options.ImageHeight, Is.EqualTo(75));
-            Assert.That(SessionCaptchaImageMiddleware.Options.DisableCache, Is.False);
-        }
-        finally
-        {
-            // Cleanup
-            SessionCaptchaImageMiddleware.Options = originalOptions;
-        }
+        _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 100, 36, null)).Returns(bytes);
+        _mockRequest.Setup(x => x.Path).Returns("/captcha-a");
+        await m1.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 100, 36, null), Times.Once);
+
+        _mockCaptcha.Setup(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 200, 80, null)).Returns(bytes);
+        _mockRequest.Setup(x => x.Path).Returns("/captcha-b");
+        await m2.Invoke(_mockHttpContext.Object, _mockCaptcha.Object);
+        _mockCaptcha.Verify(x => x.GenerateCaptchaImageBytes(_mockSession.Object, 200, 80, null), Times.Once);
     }
 
     #endregion
