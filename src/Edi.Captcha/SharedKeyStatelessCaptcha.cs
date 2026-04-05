@@ -17,6 +17,8 @@ public class SharedKeyStatelessCaptchaOptions
 
 public abstract class SharedKeyStatelessCaptcha : IStatelessCaptcha
 {
+    private const int MaxBlockedCodeRetries = 100;
+
     private readonly byte[] _sharedKey;
     private readonly SharedKeyStatelessCaptchaOptions _options;
 
@@ -48,8 +50,11 @@ public abstract class SharedKeyStatelessCaptcha : IStatelessCaptcha
     public StatelessCaptchaResult GenerateCaptcha(int width = 100, int height = 36)
     {
         var captchaCode = GenerateCaptchaCode();
+        var retries = 0;
         while (_options.BlockedCodes.Contains(captchaCode))
         {
+            if (++retries > MaxBlockedCodeRetries)
+                throw new InvalidOperationException($"Unable to generate a captcha code not in BlockedCodes after {MaxBlockedCodeRetries} attempts.");
             captchaCode = GenerateCaptchaCode();
         }
 

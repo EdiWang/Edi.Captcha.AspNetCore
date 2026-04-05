@@ -15,6 +15,8 @@ public class StatelessCaptchaOptions
 
 public abstract class StatelessCaptcha(IDataProtectionProvider dataProtectionProvider, StatelessCaptchaOptions options) : IStatelessCaptcha
 {
+    private const int MaxBlockedCodeRetries = 100;
+
     private readonly IDataProtector _dataProtector = dataProtectionProvider.CreateProtector("Edi.Captcha.Stateless");
 
     public abstract string GenerateCaptchaCode();
@@ -22,8 +24,11 @@ public abstract class StatelessCaptcha(IDataProtectionProvider dataProtectionPro
     public StatelessCaptchaResult GenerateCaptcha(int width = 100, int height = 36)
     {
         var captchaCode = GenerateCaptchaCode();
+        var retries = 0;
         while (options.BlockedCodes.Contains(captchaCode))
         {
+            if (++retries > MaxBlockedCodeRetries)
+                throw new InvalidOperationException($"Unable to generate a captcha code not in BlockedCodes after {MaxBlockedCodeRetries} attempts.");
             captchaCode = GenerateCaptchaCode();
         }
 
